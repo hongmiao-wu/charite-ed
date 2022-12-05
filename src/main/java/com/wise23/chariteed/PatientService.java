@@ -9,6 +9,6 @@ public class PatientService {
 
     public PatientService() {
         this.fhirContext = FhirContext.forR4();
-        this.client = fhirContext.newRestfulGenericClient("https://hapi.fhir.org/baseR4");
+        this.client = fhirContext.newRestfulGenericClient(ChariteEdApplication.server_url);
     }
 }

@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<head> 
+    <title>Add new patient</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h1>You are successfully logged in, start the journey right now. Add new patient below by entering ID.</h1>
+    <form action="#" th:action="@{/generatePatient}" th:object="${generatePatient}" method="post">
+    	<p>Id: <input type="text" th:field="*{id}" /></p>
+        <p><input type="submit" value="Add patient" /> <input type="reset" value="Reset" /></p>
+    </form>
+</body>
+</html>
