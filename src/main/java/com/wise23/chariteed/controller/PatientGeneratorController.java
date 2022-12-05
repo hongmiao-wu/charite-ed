@@ -1,4 +1,8 @@
-package com.wise23.chariteed;
+package com.wise23.chariteed.controller;
+
+import com.wise23.chariteed.QRCodeGenerator;
+import com.wise23.chariteed.service.PatientGenerator;
+import com.wise23.chariteed.service.PatientService;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,13 +24,13 @@ public class PatientGeneratorController {
 
     PatientService patientService = new PatientService();
 
-    @GetMapping("/generatePatient")
+    @GetMapping("admin/dashboard/generatePatient")
     public String generatePatientForm(Model model) {
         model.addAttribute("generatePatient", new PatientGenerator());
         return "generatePatient";
     }
 
-    @PostMapping("/generatePatient")
+    @PostMapping("admin/dashboard/generatePatient")
     public String generatePatientSubmit(@ModelAttribute PatientGenerator generator, Model model)
             throws WriterException, IOException {
         String id = Long.toString(generator.getId());
@@ -49,7 +53,7 @@ public class PatientGeneratorController {
 
         System.out.println("URL is: " + patient_url + "\n" + "Password is: " + passwd);
 
-        return "result";
+        return "patientGenerated";
     }
 
     private String generatePassword(Patient patient, String patientData) {

@@ -1,4 +1,4 @@
-package com.wise23.chariteed;
+package com.wise23.chariteed.service;
 
 public class PatientGenerator {
 

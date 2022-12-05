@@ -1,5 +1,7 @@
 package com.wise23.chariteed.service;
 
+import com.wise23.chariteed.ChariteEdApplication;
+
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
