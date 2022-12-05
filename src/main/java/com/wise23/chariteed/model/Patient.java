@@ -1,4 +1,4 @@
-package com.wise23.chariteed;
+package com.wise23.chariteed.model;
 
 public class Patient {
     private String id;
