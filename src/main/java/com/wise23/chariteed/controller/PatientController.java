@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.hl7.fhir.r4.model.Patient;
 
-import com.wise23.chariteed.service.PatientService;
-
 @RestController
 public class PatientController {
 

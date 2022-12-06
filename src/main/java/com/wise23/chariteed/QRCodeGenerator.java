@@ -18,8 +18,15 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 public class QRCodeGenerator {
 
-    public static void createQRImage(File qrFile, String url, int size, String fileType)
-            throws WriterException, IOException {
+    private static final int size = 125;
+    private static final String fileType = "png";
+
+    public static void createQRImage(String id) throws WriterException, IOException {
+        // This is still the local url
+        String url = "http://localhost:8081/patient/" + id;
+        String fileName = "url_patient_" + id + ".png";
+        File qrFile = new File(fileName);
+
         // Create the ByteMatrix for the QR-Code that encodes the given String
         Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<>();
         hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);

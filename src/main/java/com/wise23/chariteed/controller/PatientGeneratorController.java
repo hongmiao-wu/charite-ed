@@ -16,7 +16,6 @@ import com.google.gson.*;
 import com.google.zxing.WriterException;
 
 import java.util.Random;
-import java.io.File;
 import java.io.IOException;
 
 @Controller
@@ -27,7 +26,7 @@ public class PatientGeneratorController {
     @GetMapping("admin/dashboard/generatePatient")
     public String generatePatientForm(Model model) {
         model.addAttribute("generatePatient", new PatientGenerator());
-        return "generatePatient";
+        return "admin/dashboard/generatePatient";
     }
 
     @PostMapping("admin/dashboard/generatePatient")
@@ -36,24 +35,28 @@ public class PatientGeneratorController {
         String id = Long.toString(generator.getId());
         model.addAttribute("generatePatient", generator);
 
-        Patient patient = patientService.client.read().resource(Patient.class).withId(id).execute();
+        Patient patient = null;
+
+        // In case that the ID is not existing.
+        try {
+            patient = patientService.client.read().resource(Patient.class).withId(id).execute();
+        } catch (Exception e) {
+            System.out.println("ERROR: Patient ID does not exist.");
+            return "admin/dashboard/error";
+        }
+
         String patientData = patientService.fhirContext.newJsonParser().setPrettyPrint(true)
                 .encodeResourceToString(patient);
 
         String passwd = generatePassword(patient, patientData);
+        generator.setPassword(passwd);
 
         // QR code generation
-        // This is still the local url
-        String patient_url = "http://localhost:8081/patient/" + id;
-        String fileName = "url_patient_" + id + ".png";
-        int size = 125;
-        String fileType = "png";
-        File qrFile = new File(fileName);
-        QRCodeGenerator.createQRImage(qrFile, patient_url, size, fileType);
+        QRCodeGenerator.createQRImage(id);
 
-        System.out.println("URL is: " + patient_url + "\n" + "Password is: " + passwd);
+        System.out.println("Password is: " + passwd);
 
-        return "patientGenerated";
+        return "admin/dashboard/patientGenerated";
     }
 
     private String generatePassword(Patient patient, String patientData) {
