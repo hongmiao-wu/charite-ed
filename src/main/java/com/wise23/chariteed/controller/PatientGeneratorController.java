@@ -1,14 +1,18 @@
 package com.wise23.chariteed.controller;
 
 import com.wise23.chariteed.QRCodeGenerator;
+import com.wise23.chariteed.model.Role;
+import com.wise23.chariteed.model.User;
 import com.wise23.chariteed.service.PatientGenerator;
 import com.wise23.chariteed.service.PatientService;
+import com.wise23.chariteed.service.UserService;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.hl7.fhir.r4.model.Patient;
 
@@ -17,11 +21,15 @@ import com.google.zxing.WriterException;
 
 import java.util.Random;
 import java.io.IOException;
+import java.util.List;
 
 @Controller
 public class PatientGeneratorController {
 
     PatientService patientService = new PatientService();
+
+    @Autowired
+    UserService userService;
 
     @GetMapping("admin/dashboard/generatePatient")
     public String generatePatientForm(Model model) {
@@ -48,18 +56,36 @@ public class PatientGeneratorController {
         String patientData = patientService.fhirContext.newJsonParser().setPrettyPrint(true)
                 .encodeResourceToString(patient);
 
-        String passwd = generatePassword(patient, patientData);
-        generator.setPassword(passwd);
+        generator.setPassword(generatePassword(patientData));
 
         // QR code generation
         QRCodeGenerator.createQRImage(id);
 
-        System.out.println("Password is: " + passwd);
+        JsonObject name = JsonParser.parseString(patientData).getAsJsonObject().get("name").getAsJsonArray().get(0)
+                .getAsJsonObject();
+
+        User user = new User();
+        // Lot of dummy data
+        user.setFirstName(name.get("given").getAsJsonArray().get(0).getAsString());
+        user.setLastName(name.get("family").getAsString());
+        user.setMobile("2222222222");
+        user.setEmail("test@mail.de");
+        user.setPassword(generator.getPassword());
+        user.setRole(Role.USER);
+        List<Object> userPresentObj = userService.isUserPresent(user);
+        if ((Boolean) userPresentObj.get(0)) {
+            // TODO: Errorhandling
+            System.out.println("ERROR: Patient Account already exists!");
+            return "admin/dashboard/generatePatient";
+        }
+
+        userService.saveUser(user);
+        System.out.println("User " + user.getFirstName() + " created\n Password is: " + generator.getPassword());
 
         return "admin/dashboard/patientGenerated";
     }
 
-    private String generatePassword(Patient patient, String patientData) {
+    private String generatePassword(String patientData) {
         JsonObject name = JsonParser.parseString(patientData).getAsJsonObject().get("name").getAsJsonArray().get(0)
                 .getAsJsonObject();
         String birthYear = JsonParser.parseString(patientData).getAsJsonObject().get("birthDate").getAsString()
