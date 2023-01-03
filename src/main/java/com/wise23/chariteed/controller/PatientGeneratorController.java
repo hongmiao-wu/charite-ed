@@ -3,7 +3,7 @@ package com.wise23.chariteed.controller;
 import com.wise23.chariteed.QRCodeGenerator;
 import com.wise23.chariteed.model.Role;
 import com.wise23.chariteed.model.User;
-import com.wise23.chariteed.service.PatientGenerator;
+import com.wise23.chariteed.model.PatientGenerator;
 import com.wise23.chariteed.service.PatientService;
 import com.wise23.chariteed.service.UserService;
 
@@ -72,6 +72,8 @@ public class PatientGeneratorController {
         user.setEmail("test@mail.de");
         user.setPassword(generator.getPassword());
         user.setRole(Role.USER);
+        user.setID(id);
+        user.setFile(generator.getFile());
         List<Object> userPresentObj = userService.isUserPresent(user);
         if ((Boolean) userPresentObj.get(0)) {
             // TODO: Errorhandling

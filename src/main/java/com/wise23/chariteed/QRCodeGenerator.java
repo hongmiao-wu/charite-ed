@@ -23,7 +23,7 @@ public class QRCodeGenerator {
 
     public static void createQRImage(String id) throws WriterException, IOException {
         // This is still the local url
-        String url = "http://localhost:8081/patient/" + id;
+        String url = "http://localhost:8080/login/";
         String fileName = "url_patient_" + id + ".png";
         File qrFile = new File(fileName);
 

@@ -7,6 +7,7 @@
   <h2>Welcome to User Dashboard</h2>
   <p>Logged as: <span sec:authentication="name"></span></p>
   <p>Has role: <span sec:authentication="authorities"></span></p>
+  <a th:href="${user.getFile()}" th:text="${user.getFile()}" />
   <div>
     <p><a th:href="@{/}">Home</a></p>
     <p><a th:href="@{/logout}">Log out</a></p>

@@ -10,25 +10,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
-
 @Entity
 @Table(name = "users")
-public class User implements UserDetails  {
-    @SequenceGenerator(
-            name = "users_sequence",
-            sequenceName = "users_sequence",
-            allocationSize = 1
-    )
+public class User implements UserDetails {
+    @SequenceGenerator(name = "users_sequence", sequenceName = "users_sequence", allocationSize = 1)
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "users_sequence"
-    )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_sequence")
     private Long id;
+
+    private String patientID;
+
+    private File file;
 
     @NotNull(message = "First Name cannot be empty")
     @Column(name = "first_name")
@@ -80,7 +78,7 @@ public class User implements UserDetails  {
         return password;
     }
 
-    public void setPassword(String password){
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -109,25 +107,59 @@ public class User implements UserDetails  {
         return enabled;
     }
 
-    public Role getRole() { return role; }
+    public Role getRole() {
+        return role;
+    }
 
     public void setRole(com.wise23.chariteed.model.Role role) {
         this.role = role;
     }
 
-    public String getEmail() { return email; }
+    public String getEmail() {
+        return email;
+    }
 
-    public void setEmail(String email) { this.email = email; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public String getFirstName() { return firstName; }
+    public String getFirstName() {
+        return firstName;
+    }
 
-    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-    public String getMobile() { return mobile; }
+    public String getMobile() {
+        return mobile;
+    }
 
-    public void setMobile(String mobile) { this.mobile = mobile; }
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
 
-    public String getLastName() { return lastName; }
+    public String getLastName() {
+        return lastName;
+    }
 
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setID(String patientID) {
+        this.patientID = patientID;
+    }
+
+    public String getID() {
+        return patientID;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    public File getFile() {
+        return file;
+    }
 }
