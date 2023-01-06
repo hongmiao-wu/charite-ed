@@ -17,6 +17,7 @@
       <option value="USER">USER</option>
     </select> <br/><br/>
     <button type="submit">Register</button> | <a th:href="@{|/login|}" th:text="'Log in'"></a>
+    <span th:utext="${errorMessage}"></span>
     <span th:utext="${successMessage}"></span>
     <div th:if="${bindingResult!=null && bindingResult.getAllErrors()!=null}">
       <ul th:each="data : ${bindingResult.getAllErrors()}">

@@ -12,32 +12,37 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.hl7.fhir.r4.model.Patient;
 
 import com.google.gson.*;
 import com.google.zxing.WriterException;
 
-import java.util.Random;
 import java.io.IOException;
-import java.util.List;
 
 @Controller
+@RequestMapping("admin/dashboard")
 public class PatientGeneratorController {
 
     PatientService patientService = new PatientService();
 
+    Logger logger = LoggerFactory.getLogger(PatientGeneratorController.class);
+
     @Autowired
     UserService userService;
 
-    @GetMapping("admin/dashboard/generatePatient")
-    public String generatePatientForm(Model model) {
+    @GetMapping("/generatePatient")
+    public String generatePatient(Model model) {
         model.addAttribute("generatePatient", new PatientGenerator());
         return "admin/dashboard/generatePatient";
     }
 
-    @PostMapping("admin/dashboard/generatePatient")
+    @PostMapping("/generatePatient")
     public String generatePatientSubmit(@ModelAttribute PatientGenerator generator, Model model)
             throws WriterException, IOException {
         String id = Long.toString(generator.getId());
@@ -56,7 +61,7 @@ public class PatientGeneratorController {
         String patientData = patientService.fhirContext.newJsonParser().setPrettyPrint(true)
                 .encodeResourceToString(patient);
 
-        generator.setPassword(generatePassword(patientData));
+        generator.setPassword(patientService.generatePassword(patientData));
 
         // QR code generation
         QRCodeGenerator.createQRImage(id);
@@ -74,10 +79,9 @@ public class PatientGeneratorController {
         user.setRole(Role.USER);
         user.setID(id);
         user.setFile(generator.getFile());
-        List<Object> userPresentObj = userService.isUserPresent(user);
-        if ((Boolean) userPresentObj.get(0)) {
-            // TODO: Errorhandling
-            System.out.println("ERROR: Patient Account already exists!");
+
+        if (userService.isUserPresent(user)) {
+            logger.error("ERROR: Patient Account already exists!");
             return "admin/dashboard/generatePatient";
         }
 
@@ -86,18 +90,4 @@ public class PatientGeneratorController {
 
         return "admin/dashboard/patientGenerated";
     }
-
-    private String generatePassword(String patientData) {
-        JsonObject name = JsonParser.parseString(patientData).getAsJsonObject().get("name").getAsJsonArray().get(0)
-                .getAsJsonObject();
-        String birthYear = JsonParser.parseString(patientData).getAsJsonObject().get("birthDate").getAsString()
-                .split("-")[0];
-        String firstName = name.get("given").getAsJsonArray().get(0).getAsString();
-        String surname = name.get("family").getAsString();
-        Random random = new Random();
-        String random_id = String.format("%04d", random.nextInt(10000));
-
-        return firstName + "_" + surname + "_" + birthYear + "_" + random_id;
-    }
-
 }

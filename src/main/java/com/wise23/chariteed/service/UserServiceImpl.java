@@ -9,8 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,30 +29,30 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public List<Object> isUserPresent(User user) {
-        boolean userExists = false;
-        String message = null;
+    public boolean isUserPresent(User user) {
         Optional<User> existingUserEmail = userRepository.findByEmail(user.getEmail());
         if (existingUserEmail.isPresent()) {
-            userExists = true;
-            message = "Email Already Present!";
+            System.out.println("Email Already exist!");
+            return true;
         }
         Optional<User> existingUserMobile = userRepository.findByMobile(user.getMobile());
         if (existingUserMobile.isPresent()) {
-            userExists = true;
-            message = "Mobile Number Already Present!";
+            System.out.println("Mobile Number Already exists!");
+            return true;
         }
-        if (existingUserEmail.isPresent() && existingUserMobile.isPresent()) {
-            message = "Email and Mobile Number Both Already Present!";
-        }
-        System.out.println("existingUserEmail.isPresent() - " + existingUserEmail.isPresent()
-                + "existingUserMobile.isPresent() - " + existingUserMobile.isPresent());
-        return Arrays.asList(userExists, message);
+
+        System.out.println("User was not existing!");
+        return false;
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByFirstName(email)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("USER_NOT_FOUND", email)));
+    }
+
+    @Override
+    public User getUser(String email) {
+        return userRepository.getUserByEmail(email);
     }
 }
