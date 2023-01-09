@@ -9,8 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
@@ -26,23 +24,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setPassword(encodedPassword);
         // user.setRole(Role.USER);
         userRepository.save(user);
-    }
-
-    @Override
-    public boolean isUserPresent(User user) {
-        Optional<User> existingUserEmail = userRepository.findByEmail(user.getEmail());
-        if (existingUserEmail.isPresent()) {
-            System.out.println("Email Already exist!");
-            return true;
-        }
-        Optional<User> existingUserMobile = userRepository.findByMobile(user.getMobile());
-        if (existingUserMobile.isPresent()) {
-            System.out.println("Mobile Number Already exists!");
-            return true;
-        }
-
-        System.out.println("User was not existing!");
-        return false;
     }
 
     @Override

@@ -56,7 +56,7 @@ public class UserController {
         Resource file = convertBlobToResource(test);
 
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + "test.pdf" + "\"").body(file);
+                "attachment; filename=\"" + "doctors_letter.pdf" + "\"").body(file);
     }
 
     private Resource convertBlobToResource(Blob blob) {

@@ -27,7 +27,7 @@ public class User implements UserDetails {
     private String patientID;
 
     @Lob
-    private Blob file_test;
+    private Blob file;
 
     @NotNull(message = "First Name cannot be empty")
     @Column(name = "first_name")
@@ -67,6 +67,22 @@ public class User implements UserDetails {
 
     @Column(name = "enabled")
     private Boolean enabled = true;
+
+    public User() {
+
+    }
+
+    public User(String firstName, String lastName, String email, String password, String mobile, Role role,
+            String patientID, Blob file) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.mobile = mobile;
+        this.role = role;
+        this.patientID = patientID;
+        this.file = file;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -157,10 +173,10 @@ public class User implements UserDetails {
     }
 
     public void setFile(Blob test) {
-        this.file_test = test;
+        this.file = test;
     }
 
     public Blob getFile() {
-        return file_test;
+        return file;
     }
 }

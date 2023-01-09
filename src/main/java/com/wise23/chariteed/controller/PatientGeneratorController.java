@@ -3,6 +3,7 @@ package com.wise23.chariteed.controller;
 import com.wise23.chariteed.QRCodeGenerator;
 import com.wise23.chariteed.model.Role;
 import com.wise23.chariteed.model.User;
+import com.wise23.chariteed.repository.UserRepository;
 import com.wise23.chariteed.model.PatientGenerator;
 import com.wise23.chariteed.service.PatientService;
 import com.wise23.chariteed.service.UserService;
@@ -40,6 +41,9 @@ public class PatientGeneratorController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    UserRepository userRepository;
+
     @GetMapping("/generatePatient")
     public String generatePatient(Model model) {
         model.addAttribute("generatePatient", new PatientGenerator());
@@ -73,20 +77,12 @@ public class PatientGeneratorController {
         JsonObject name = JsonParser.parseString(patientData).getAsJsonObject().get("name").getAsJsonArray().get(0)
                 .getAsJsonObject();
 
-        User user = new User();
-        // Lot of dummy data
-        user.setFirstName(name.get("given").getAsJsonArray().get(0).getAsString());
-        user.setLastName(name.get("family").getAsString());
-        user.setMobile("2222222222");
-        user.setEmail("test@mail.de");
-        user.setPassword(generator.getPassword());
-        user.setRole(Role.USER);
-        user.setID(id);
-
+        // User creation with lots of dummy data
         byte[] file_bytes = generator.getFile().getBytes();
-        user.setFile(new SerialBlob(file_bytes));
+        User user = new User(name.get("given").getAsJsonArray().get(0).getAsString(), name.get("family").getAsString(),
+                "test@mail.de", generator.getPassword(), "2222222222", Role.USER, id, new SerialBlob(file_bytes));
 
-        if (userService.isUserPresent(user)) {
+        if (userRepository.existsByEmailAndMobile(user.getEmail(), user.getMobile())) {
             logger.error("ERROR: Patient Account already exists!");
             return "admin/dashboard/generatePatient";
         }

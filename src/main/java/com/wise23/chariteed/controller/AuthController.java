@@ -38,7 +38,7 @@ public class AuthController {
             return "auth/register";
         }
 
-        if (userService.isUserPresent(user)) {
+        if (userRepository.existsByEmailAndMobile(user.getEmail(), user.getMobile())) {
             model.addAttribute("errorMessage", "ERROR: Patient Account already exists!");
             return "auth/register";
         }
