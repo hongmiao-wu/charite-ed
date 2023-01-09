@@ -1,12 +1,12 @@
 package com.wise23.chariteed.model;
 
-import java.io.File;
+import org.springframework.web.multipart.MultipartFile;
 
 public class PatientGenerator {
 
     private long id;
     private String password;
-    private File file;
+    private MultipartFile file;
 
     public long getId() {
         return id;
@@ -24,11 +24,11 @@ public class PatientGenerator {
         this.password = password;
     }
 
-    public File getFile() {
+    public MultipartFile getFile() {
         return file;
     }
 
-    public void setFile(File file) {
+    public void setFile(MultipartFile file) {
         this.file = file;
     }
 }

@@ -6,7 +6,7 @@
 </head>
 <body>
 	<h1>Add new patient below by entering ID.</h1>
-    <form action="#" th:action="@{/admin/dashboard/generatePatient}" th:object="${generatePatient}" method="post">
+    <form action="#" enctype="multipart/form-data" th:action="@{/admin/dashboard/generatePatient}" th:object="${generatePatient}" method="post">
     	<p>Id: <input type="text" th:field="*{id}" /></p>
         <p>File to upload (.pdf only): <input type="file" th:field="*{file}" /></p>
         <p><input type="submit" value="Add patient" /> <input type="reset" value="Reset" /></p>

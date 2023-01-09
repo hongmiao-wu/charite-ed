@@ -24,6 +24,10 @@ import com.google.gson.*;
 import com.google.zxing.WriterException;
 
 import java.io.IOException;
+import java.sql.SQLException;
+
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 
 @Controller
 @RequestMapping("admin/dashboard")
@@ -44,7 +48,7 @@ public class PatientGeneratorController {
 
     @PostMapping("/generatePatient")
     public String generatePatientSubmit(@ModelAttribute PatientGenerator generator, Model model)
-            throws WriterException, IOException {
+            throws WriterException, IOException, SerialException, SQLException {
         String id = Long.toString(generator.getId());
         model.addAttribute("generatePatient", generator);
 
@@ -78,7 +82,9 @@ public class PatientGeneratorController {
         user.setPassword(generator.getPassword());
         user.setRole(Role.USER);
         user.setID(id);
-        user.setFile(generator.getFile());
+
+        byte[] file_bytes = generator.getFile().getBytes();
+        user.setFile(new SerialBlob(file_bytes));
 
         if (userService.isUserPresent(user)) {
             logger.error("ERROR: Patient Account already exists!");

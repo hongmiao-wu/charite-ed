@@ -11,7 +11,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
-import java.io.File;
+import java.sql.Blob;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,7 +26,8 @@ public class User implements UserDetails {
 
     private String patientID;
 
-    private File file;
+    @Lob
+    private Blob file_test;
 
     @NotNull(message = "First Name cannot be empty")
     @Column(name = "first_name")
@@ -155,11 +156,11 @@ public class User implements UserDetails {
         return patientID;
     }
 
-    public void setFile(File file) {
-        this.file = file;
+    public void setFile(Blob test) {
+        this.file_test = test;
     }
 
-    public File getFile() {
-        return file;
+    public Blob getFile() {
+        return file_test;
     }
 }
