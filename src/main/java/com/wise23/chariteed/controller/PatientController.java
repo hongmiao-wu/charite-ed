@@ -1,5 +1,6 @@
-package com.wise23.chariteed;
+package com.wise23.chariteed.controller;
 
+import com.wise23.chariteed.service.PatientService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,7 +11,7 @@ public class PatientController {
 
     PatientService patientService = new PatientService();
 
-    @GetMapping("/patient/{id}")
+    @GetMapping("/admin/patient/{id}")
     public String getPatientById(@PathVariable("id") String id) {
         Patient patient = patientService.client.read().resource(Patient.class).withId(id).execute();
         return patientService.fhirContext.newJsonParser().setPrettyPrint(true).encodeResourceToString(patient);
