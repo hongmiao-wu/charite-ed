@@ -72,6 +72,15 @@ public class User implements UserDetails {
 
     }
 
+    public User(String firstName, String lastName, String email, String password, String mobile, Role role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.mobile = mobile;
+        this.role = role;
+    }
+
     public User(String firstName, String lastName, String email, String password, String mobile, Role role,
             String patientID, Blob file) {
         this.firstName = firstName;

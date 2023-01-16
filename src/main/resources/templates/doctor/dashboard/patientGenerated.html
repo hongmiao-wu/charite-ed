@@ -1,12 +1,14 @@
 <!DOCTYPE HTML>
 <html xmlns:th="https://www.thymeleaf.org">
 <head> 
-    <title>Error creating doctor</title>
+    <title>Result</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-	<h1>ERROR: Input has the wrong format.</h1>
-    <p><a href="/admin/dashboard/generateDoctor">Add doctor</a></p>
+	<h1>Patient created.</h1>
+    <p th:text="'ID: ' + ${patient.id}" />
+    <p th:text="'Password: ' + ${patient.password}" />
+    <p><a href="/doctor/dashboard/generatePatient">Add another patient</a></p>
     <p><a th:href="@{/}">Home</a></p>
     <p><a th:href="@{/logout}">Log out</a></p>
 </body>

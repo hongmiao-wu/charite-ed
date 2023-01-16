@@ -10,10 +10,10 @@ import com.wise23.chariteed.service.UserService;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.slf4j.Logger;
@@ -31,12 +31,11 @@ import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
 
 @Controller
-@RequestMapping("admin/dashboard")
-public class PatientGeneratorController {
+public class DoctorController {
 
     PatientService patientService = new PatientService();
 
-    Logger logger = LoggerFactory.getLogger(PatientGeneratorController.class);
+    Logger logger = LoggerFactory.getLogger(DoctorController.class);
 
     @Autowired
     UserService userService;
@@ -44,17 +43,22 @@ public class PatientGeneratorController {
     @Autowired
     UserRepository userRepository;
 
-    @GetMapping("/generatePatient")
-    public String generatePatient(Model model) {
-        model.addAttribute("generatePatient", new PatientGenerator());
-        return "admin/dashboard/generatePatient";
+    @RequestMapping(value = { "/doctor/dashboard" }, method = RequestMethod.GET)
+    public String doctorHome() {
+        return "doctor/dashboard";
     }
 
-    @PostMapping("/generatePatient")
+    @RequestMapping(value = { "/doctor/dashboard/generatePatient" }, method = RequestMethod.GET)
+    public String generatePatient(Model model) {
+        model.addAttribute("generatePatient", new PatientGenerator());
+        return "/doctor/dashboard/generatePatient";
+    }
+
+    @PostMapping("/doctor/dashboard/generatePatient")
     public String generatePatientSubmit(@ModelAttribute PatientGenerator generator, Model model)
             throws WriterException, IOException, SerialException, SQLException {
         String id = Long.toString(generator.getId());
-        model.addAttribute("generatePatient", generator);
+        model.addAttribute("patient", generator);
 
         Patient patient = null;
 
@@ -63,7 +67,7 @@ public class PatientGeneratorController {
             patient = patientService.client.read().resource(Patient.class).withId(id).execute();
         } catch (Exception e) {
             System.out.println("ERROR: Patient ID does not exist.");
-            return "admin/dashboard/error";
+            return "/doctor/dashboard/error";
         }
 
         String patientData = patientService.fhirContext.newJsonParser().setPrettyPrint(true)
@@ -80,16 +84,17 @@ public class PatientGeneratorController {
         // User creation with lots of dummy data
         byte[] file_bytes = generator.getFile().getBytes();
         User user = new User(name.get("given").getAsJsonArray().get(0).getAsString(), name.get("family").getAsString(),
-                "test@mail.de", generator.getPassword(), "2222222222", Role.USER, id, new SerialBlob(file_bytes));
+                "test@mail.de", generator.getPassword(), "2222222222", Role.PATIENT, id,
+                new SerialBlob(file_bytes));
 
         if (userRepository.existsByEmailAndMobile(user.getEmail(), user.getMobile())) {
             logger.error("ERROR: Patient Account already exists!");
-            return "admin/dashboard/generatePatient";
+            return "/doctor/dashboard/error";
         }
 
         userService.saveUser(user);
-        System.out.println("User " + user.getFirstName() + " created\n Password is: " + generator.getPassword());
+        System.out.println("Patient " + user.getLastName() + " created\nPassword is: " + generator.getPassword());
 
-        return "admin/dashboard/patientGenerated";
+        return "/doctor/dashboard/patientGenerated";
     }
 }
