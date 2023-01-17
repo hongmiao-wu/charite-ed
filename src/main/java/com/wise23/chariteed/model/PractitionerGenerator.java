@@ -1,6 +1,6 @@
 package com.wise23.chariteed.model;
 
-public class DoctorGenerator {
+public class PractitionerGenerator {
     private String firstName;
     private String lastName;
     private String password;

@@ -1,4 +1,4 @@
-package com.wise23.chariteed;
+package com.wise23.chariteed.constant;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

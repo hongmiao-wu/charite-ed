@@ -1,6 +1,6 @@
 package com.wise23.chariteed.controller;
 
-import com.wise23.chariteed.QRCodeGenerator;
+import com.wise23.chariteed.constant.QRCodeGenerator;
 import com.wise23.chariteed.model.Role;
 import com.wise23.chariteed.model.User;
 import com.wise23.chariteed.repository.UserRepository;

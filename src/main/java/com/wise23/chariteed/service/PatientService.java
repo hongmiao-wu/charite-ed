@@ -5,12 +5,14 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.*;
-import com.wise23.chariteed.GetPropertiesBean;
+import com.wise23.chariteed.constant.GetPropertiesBean;
 import com.wise23.chariteed.config.FhirConfig;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PatientService {
     public FhirContext fhirContext;
     public IGenericClient client;
