@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Admin Dashboard</title>
+  <title>Doctor Dashboard</title>
 </head>
 <body>
-  <h2>Welcome to Admin Dashboard</h2>
+  <h2>Welcome to Doctor Dashboard</h2>
   <p>Logged as: <span sec:authentication="name"></span></p>
   <p>Has role: <span sec:authentication="authorities"></span></p>
   <p><a th:href="@{/}">Home</a></p>
-  <p><a th:href="@{/admin/dashboard/generateDoctor}">Add doctor</a></p>
+  <p><a th:href="@{/doctor/dashboard/generatePatient}">Add patient</a></p>
   <p><a th:href="@{/logout}">Log out</a></p>
 </body>
 </html>

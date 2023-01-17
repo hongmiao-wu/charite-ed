@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<head> 
+    <title>Add new doctor</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h1>Add new doctor below by entering the doctor's information.</h1>
+    <form action="#" enctype="multipart/form-data" th:action="@{/admin/dashboard/generateDoctor}" th:object="${generateDoctor}" method="post">
+    	<p>First name: <input type="text" th:field="*{firstName}" /></p>
+        <p>Last name: <input type="text" th:field="*{lastName}" /></p>
+        <p>Phone number: <input type="text" th:field="*{phoneNumber}" /></p>
+        <p>E-Mail: <input type="text" th:field="*{email}" /></p>
+        <p><input type="submit" value="Add doctor" /> <input type="reset" value="Reset" /></p>
+    </form>
+    <p><a href="/admin/dashboard">Home</a></p>
+</body>
+</html>
