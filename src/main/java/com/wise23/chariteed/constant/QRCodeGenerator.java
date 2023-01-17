@@ -1,4 +1,4 @@
-package com.wise23.chariteed;
+package com.wise23.chariteed.constant;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -15,6 +15,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.wise23.chariteed.constant.GetPropertiesBean;
 
 public class QRCodeGenerator {
 

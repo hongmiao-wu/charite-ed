@@ -29,8 +29,8 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/patient/dashboard")
 public class PatientController {
 
-    PatientService patientService = new PatientService();
-
+    @Autowired
+    PatientService patientService;
     @Autowired
     UserService userService;
 
@@ -41,7 +41,6 @@ public class PatientController {
     public String homePage(Principal principal, Model model) throws SQLException {
         User user = userService.getUser(principal.getName());
         model.addAttribute("user", user);
-
         return "patient/dashboard";
     }
 

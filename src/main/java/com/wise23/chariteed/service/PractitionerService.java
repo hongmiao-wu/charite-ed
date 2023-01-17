@@ -2,7 +2,7 @@ package com.wise23.chariteed.service;
 
 import java.util.Random;
 
-public class DoctorService {
+public class PractitionerService {
 
     public static String generatePassword(String firstName, String lastName) {
         Random rand = new Random();

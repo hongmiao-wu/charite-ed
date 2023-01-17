@@ -3,8 +3,8 @@ package com.wise23.chariteed.controller;
 import com.wise23.chariteed.model.Role;
 import com.wise23.chariteed.model.User;
 import com.wise23.chariteed.repository.UserRepository;
-import com.wise23.chariteed.model.DoctorGenerator;
-import com.wise23.chariteed.service.DoctorService;
+import com.wise23.chariteed.model.PractitionerGenerator;
+import com.wise23.chariteed.service.PractitionerService;
 import com.wise23.chariteed.service.PatientService;
 import com.wise23.chariteed.service.UserService;
 
@@ -39,19 +39,19 @@ public class AdminController {
 
     @RequestMapping(value = { "/admin/dashboard/generateDoctor" }, method = RequestMethod.GET)
     public String generatePatient(Model model) {
-        model.addAttribute("generateDoctor", new DoctorGenerator());
+        model.addAttribute("generateDoctor", new PractitionerGenerator());
         return "/admin/dashboard/generateDoctor";
     }
 
     @PostMapping("/admin/dashboard/generateDoctor")
-    public String generatePatientSubmit(@ModelAttribute DoctorGenerator generator, Model model) {
+    public String generatePatientSubmit(@ModelAttribute PractitionerGenerator generator, Model model) {
 
-        String passwd = DoctorService.generatePassword(generator.getFirstName(), generator.getLastName());
+        String passwd = PractitionerService.generatePassword(generator.getFirstName(), generator.getLastName());
 
         generator.setPassword(passwd);
 
         User user = new User(generator.getFirstName(), generator.getLastName(), generator.getEmail(), passwd,
-                generator.getPhoneNumber(), Role.DOCTOR);
+                generator.getPhoneNumber(), Role.PRACTITIONER);
 
         if (userRepository.existsByEmailAndMobile(user.getEmail(), user.getMobile())) {
             logger.error("ERROR: Doctors Account already exists!");
