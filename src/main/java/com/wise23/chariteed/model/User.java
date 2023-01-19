@@ -1,5 +1,6 @@
 package com.wise23.chariteed.model;
 
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
@@ -8,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.sql.rowset.serial.SerialBlob;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
@@ -18,6 +20,7 @@ import java.util.Collections;
 
 @Entity
 @Table(name = "users")
+@Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class User implements UserDetails {
     @SequenceGenerator(name = "users_sequence", sequenceName = "users_sequence", allocationSize = 1)
     @Id
@@ -68,12 +71,17 @@ public class User implements UserDetails {
     @Column(name = "enabled")
     private Boolean enabled = true;
 
-    public User() {
-
+    public User(String firstName, String lastName, String email, String password, String mobile, Role role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.mobile = mobile;
+        this.role = role;
     }
 
     public User(String firstName, String lastName, String email, String password, String mobile, Role role,
-            String patientID, Blob file) {
+                String patientID, Blob file) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -83,7 +91,6 @@ public class User implements UserDetails {
         this.patientID = patientID;
         this.file = file;
     }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());
@@ -122,61 +129,5 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(com.wise23.chariteed.model.Role role) {
-        this.role = role;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public void setID(String patientID) {
-        this.patientID = patientID;
-    }
-
-    public String getID() {
-        return patientID;
-    }
-
-    public void setFile(Blob test) {
-        this.file = test;
-    }
-
-    public Blob getFile() {
-        return file;
     }
 }

@@ -5,10 +5,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-	<h1>Patient created.</h1>
-    <p th:text="'ID: ' + ${generatePatient.id}" />
-    <p th:text="'Password: ' + ${generatePatient.password}" />
-    <p><a href="/admin/dashboard/generatePatient">Add another patient</a></p>
+	<h1>Doctor created.</h1>
+    <p th:text="'Name: ' + ${doctor.getFirstName()} + ' ' + ${doctor.getLastName()}" />
+    <p th:text="'Password: ' + ${doctor.getPassword()}" />
+    <p><a href="/admin/dashboard/generateDoctor">Add another Doctor</a></p>
     <p><a th:href="@{/}">Home</a></p>
     <p><a th:href="@{/logout}">Log out</a></p>
 </body>

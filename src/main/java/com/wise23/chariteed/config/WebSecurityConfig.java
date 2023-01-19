@@ -51,7 +51,7 @@ public class WebSecurityConfig {
 
         http.authorizeRequests()
                 // URL matching for accessibility
-                .antMatchers("/", "/login", "/register").permitAll() // only for test environment
+                .antMatchers("/", "/login", "/register","/h2-console/**").permitAll() // only for test environment
                 .antMatchers("/admin/**").hasAnyAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and()
