@@ -141,6 +141,11 @@
 			<artifactId>jquery</artifactId>
 			<version>3.6.1</version>
 		</dependency>
+		<!-- WebSocket for communication between patients and admins -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
 
 	</dependencies>
 
