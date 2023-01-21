@@ -20,6 +20,9 @@ public class Instruction {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+    @Column(name = "created_by", updatable = false)
+    private String createdBy;
     private String type;
+    private String title;
     private String content;
 }

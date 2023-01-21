@@ -1,5 +1,6 @@
 package com.wise23.chariteed.repository;
 
+import com.wise23.chariteed.model.PractitionerData;
 import com.wise23.chariteed.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

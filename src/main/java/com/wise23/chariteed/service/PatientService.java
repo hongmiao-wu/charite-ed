@@ -1,7 +1,13 @@
 package com.wise23.chariteed.service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Random;
 
+import com.wise23.chariteed.model.InstructionToPatient;
+import com.wise23.chariteed.model.PatientData;
+import com.wise23.chariteed.repository.InstructionToPatientRepository;
+import com.wise23.chariteed.repository.PatientDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.*;
@@ -10,12 +16,23 @@ import com.wise23.chariteed.config.FhirConfig;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PatientService {
+
+    @Autowired
+    PatientDataRepository patientDataRepository;
+
+    @Autowired
+    InstructionToPatientRepository instructionToPatientRepository;
+
+    //feedback time
+    Long timeForFeedbackInHours = Long.valueOf(24 * 3);
+
     public FhirContext fhirContext;
     public IGenericClient client;
 
-    @Autowired
     public PatientService() {
         this.fhirContext = FhirConfig.getFhirContext();
         this.client = fhirContext.newRestfulGenericClient(GetPropertiesBean.getTestserverURL());
@@ -51,5 +68,26 @@ public class PatientService {
 
         // Concatenate the fields into a single string
         return given + "_" + family + "_" + year + "_" + random_id;
+    }
+
+    public PatientData findByFhirId(Long fhirID) {
+        return patientDataRepository.findPatientDataByFhirId(fhirID).orElse(null);
+    }
+
+    public InstructionToPatient timeForFeedback(Long fhirID) {
+        InstructionToPatient latestInstruction = instructionToPatientRepository.findLatestInstructionOfPatient(fhirID).orElse(null);
+
+        if (latestInstruction == null) {
+            return null;
+        }
+
+        LocalDateTime instructionTime = latestInstruction.getGivenAt();
+        Long timePassed = ChronoUnit.HOURS.between(instructionTime, LocalDateTime.now());
+
+        if (timePassed > timeForFeedbackInHours) {
+            return latestInstruction;
+        }
+
+        return null;
     }
 }

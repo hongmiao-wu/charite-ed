@@ -1,5 +1,6 @@
 package com.wise23.chariteed.service;
 
+import com.wise23.chariteed.model.PractitionerData;
 import com.wise23.chariteed.model.User;
 import com.wise23.chariteed.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
