@@ -6,12 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -22,8 +20,11 @@ public class InstructionController {
     InstructionService instructionService;
 
 
-    @RequestMapping("/view")
-    public String viewInstruction(Model model) {
+    @RequestMapping("/view/{id}")
+    public String viewInstruction(@PathVariable Long id, Model model) {
+        Instruction dbInstruction = instructionService.getInstruction(id);
+        model.addAttribute("instruction", dbInstruction);
+
         return "instruction/viewInstruction";
     }
 
@@ -41,7 +42,22 @@ public class InstructionController {
         Instruction savedInstruction = instructionService.saveInstruction(username, instruction);
 
         model.addAttribute("instruction", savedInstruction);
-        return "/instruction/viewInstruction";
+        return "redirect:/instruction/view/" + savedInstruction.getId().toString();
+    }
+
+    @GetMapping("/view/all")
+    public String getAllInstructions(Model model) {
+        List<Instruction> allInstructions = instructionService.getAllInstructions();
+        model.addAttribute("allInstructions", allInstructions);
+
+        return "instruction/allInstructions";
+    }
+
+    @RequestMapping("/delete/{id}")
+    public String deleteInstruction(@PathVariable Long id) {
+        instructionService.deleteInstruction(id);
+
+        return "redirect:/instruction/view/all";
     }
 
 

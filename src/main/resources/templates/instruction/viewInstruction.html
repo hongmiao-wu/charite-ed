@@ -13,7 +13,11 @@
 
   <h1 class="page-header">Instruction</h1>
 
-  <div class="row">
+  <div th:if="${instruction == null}" class="alert alert-warning alert-dismissible show" role="alert">
+    <strong>Instruction not found!</strong>
+  </div>
+
+  <div th:if="${instruction != null}" class="row">
     <div class="col-md-12">
       <div th:object="${instruction}" id="instruction" class="form-horizontal">
         <!--input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /-->
@@ -48,6 +52,13 @@
           <label class="control-label col-xs-2" for="file">File to upload</label>
           <input id="file" type="file" th:field="*{file}" class="col-xs-10"/-->
       </div>
+    </div>
+  </div>
+
+  <div th:if="${instruction != null}" class="row">
+    <div class="col-md-12">
+      <a th:href="@{/instruction/view/all}" class="btn btn-primary">View all</a>
+      <a th:href="@{/instruction/delete/{id}(id=${instruction.id})}" class="btn btn-danger">Delete</a>
     </div>
   </div>
 </div>
