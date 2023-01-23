@@ -8,6 +8,7 @@
   <p>Logged as: <span sec:authentication="name"></span></p>
   <p>Has role: <span sec:authentication="authorities"></span></p>
   <a href="/patient/dashboard/download">Download doctor's letter</a>
+  <p><a th:href="@{/index.html}">Send Messages</a></p>
   <div>
     <p><a th:href="@{/}">Home</a></p>
     <p><a th:href="@{/logout}">Log out</a></p>
