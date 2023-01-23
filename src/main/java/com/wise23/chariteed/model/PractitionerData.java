@@ -19,6 +19,9 @@ public class PractitionerData {
     @JoinColumn(name = "user_id")
     User user;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "practitioner")
+    @Column(name = "fhir_id", unique = true)
+    Long fhirId;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "practitioner")
     Set<InstructionToPatient> givenInstructions;
 }

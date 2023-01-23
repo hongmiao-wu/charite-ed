@@ -2,6 +2,7 @@ package com.wise23.chariteed.controller;
 
 import com.wise23.chariteed.model.InstructionToPatient;
 import com.wise23.chariteed.model.PatientData;
+import com.wise23.chariteed.model.PractitionerData;
 import com.wise23.chariteed.service.PatientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.hl7.fhir.r4.model.Patient;
+
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -27,7 +30,7 @@ public class PatientController {
         return patientService.fhirContext.newJsonParser().setPrettyPrint(true).encodeResourceToString(patient);
     }
 
-    @GetMapping("/{fhir_ID}")
+    @GetMapping("/view/{fhir_ID}")
     public String showPatientById(@PathVariable Long fhir_ID, Model model) {
 
         try {
@@ -49,5 +52,13 @@ public class PatientController {
         }
 
         return "patient/dashboard";
+    }
+
+    @GetMapping("/view/all")
+    public String showAllPatients(Model model) {
+        List<PatientData> allPatients = patientService.getAllPatients();
+        model.addAttribute("allPatients", allPatients);
+
+        return "patient/allPatients";
     }
 }

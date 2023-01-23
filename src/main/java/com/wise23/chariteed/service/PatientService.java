@@ -2,6 +2,7 @@ package com.wise23.chariteed.service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Random;
 
 import com.wise23.chariteed.model.InstructionToPatient;
@@ -68,6 +69,10 @@ public class PatientService {
 
         // Concatenate the fields into a single string
         return given + "_" + family + "_" + year + "_" + random_id;
+    }
+
+    public List<PatientData> getAllPatients(){
+        return patientDataRepository.findAll();
     }
 
     public PatientData findByFhirId(Long fhirID) {

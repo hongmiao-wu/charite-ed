@@ -34,10 +34,22 @@ public class InstructionToPatient {
     PatientData patient;
 
 
-    @CreationTimestamp
     @Column(name = "given_at", updatable = false)
     LocalDateTime givenAt;
 
-    @Column(name = "comment")
-    String comment;
+    @Column(name = "practitioner_comment")
+    String practitionerComment;
+
+    @Column(name = "patient_comment")
+    String patientComment;
+
+    @Column(name = "feedback_rating")
+    Integer feedbackRating;
+
+    @Column(name = "feedback_given")
+    Boolean feedbackGiven = false;
+
+    @Column(name = "feedback_opened")
+    Boolean feedbackOpened = false;
+
 }
