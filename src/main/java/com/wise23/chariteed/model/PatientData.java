@@ -2,11 +2,14 @@ package com.wise23.chariteed.model;
 
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "patient_data")
 public class PatientData {
@@ -24,7 +27,7 @@ public class PatientData {
     Long fhirId;
 
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "patient")
+    @OneToMany(mappedBy = "patient")
     Set<InstructionToPatient> instructions;
 
 }

@@ -22,8 +22,11 @@
         <h1 th:text="${practitionerData.fhirId}">Practitioner Name</h1>
       </div>
 
-      <label class="control-label col-sm-2"><h3>Instructions</h3></label>
+      <div class="col-md-12">
+        <a th:href="@{/itp/create/{fhirID}(fhirID=${practitionerData.fhirId})}" class="btn btn-primary">Assign instruction</a>
+      </div>
 
+      <label class="control-label col-sm-2"><h3>Instructions</h3></label>
       <table class="table table-striped table-responsive-md">
         <thead>
         <tr>
@@ -31,9 +34,9 @@
           <th>Instruction title</th>
           <th>When</th>
           <th>Feedback in</th>
-          <th>Your Comment</th>
+          <th>Practitioner Comment</th>
           <th>Patient feedback</th>
-          <th>Patient comment</th>
+          <th>Acknowledged</th>
         </tr>
         </thead>
         <tbody>
@@ -41,15 +44,34 @@
           <td>No instructions given</td>
         </tr>
         <tr th:each="ig : ${practitionerData?.givenInstructions}">
-          <td th:text="${ig.practitioner.id}"></td>
-          <td th:text="${ig.instruction?.content}"></td>
-          <td th:text="${ig.givenAt.toString()}"></td>
-          <td th:text="${ig.comment}">
-                            <span th:if="${instructionIDforFeedback != null && instr.id == instructionIDforFeedback}"
-                                  class="badge bg-warning text-dark">feedback!</span></td>
+          <td><a th:href="@{/patient/view/{fhirID}(fhirID=${ig.patient.fhirId})}" th:text="${ig.patient.fhirId}"></a></td>
+          <td><a th:href="@{/instruction/view/{id}(id=${ig.instruction.id})}" th:text="${ig.instruction.title}"></a></td>
+          <td th:text="${#temporals.format(ig.givenAt, 'dd-MM-yyyy HH:mm')}"></td>
+          <td th:text="${ig.feedbackInDays + ' day(s)'}">Feedback in ? days</td>
+          <td th:text="${ig.practitionerComment}"></td>
+          <td th:text="${ig.feedbackRating}">
+            <div th:if="${ig.feedbackGiven}">
+              <span class="badge bg-secondary">Rating</span>
+              <div th:text="${ig.feedbackRating + ' - ' + ratingDescription.get(ig.feedbackRating)}"></div>
+            </div>
+            <div th:if="${ig.feedbackGiven}">
+              <span class="badge bg-secondary">Comment</span>
+              <div th:text="${ig.patientComment}"></div>
+            </div>
+          </td>
+          <td>
+            <a th:if="${ig.feedbackGiven && !ig.feedbackOpened}" th:href="@{/practitioner/itp-acknowledged/{itpID}(itpID=${ig.id})}" class="btn btn-success">Acknowledge</a>
+            <button th:if="${ig.feedbackGiven && ig.feedbackOpened}" class="btn btn-info">Acknowledged</button>
+          </td>
         </tr>
         </tbody>
       </table>
+
+      <div>
+        <a th:href="@{/instruction/view/all}" class="btn btn-info">View all instructions</a>
+        <a th:href="@{/patient/view/all}" class="btn btn-info">View all patients</a>
+        <a th:href="@{/practitioner/view/all}" class="btn btn-info">View all practitioners</a>
+      </div>
     </div>
 
 

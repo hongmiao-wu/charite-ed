@@ -1,11 +1,15 @@
 package com.wise23.chariteed.model;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "practitioner_data")
 public class PractitionerData {

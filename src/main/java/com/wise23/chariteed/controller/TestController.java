@@ -21,7 +21,6 @@ public class TestController {
 
 
     @RequestMapping("/generatesubjects")
-    @ResponseBody
     public String generateTestSubjects() {
         PatientData patient  = new PatientData();
         patient.setFhirId(Long.valueOf(591378));
@@ -31,6 +30,6 @@ public class TestController {
         practitioner.setFhirId(Long.valueOf(1859));
         practitionerDataRepository.save(practitioner);
 
-        return "done";
+        return "redirect:/practitioner/view/all";
     }
 }

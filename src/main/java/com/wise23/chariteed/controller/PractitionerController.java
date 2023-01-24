@@ -1,6 +1,9 @@
 package com.wise23.chariteed.controller;
 
+import com.wise23.chariteed.model.InstructionToPatient;
 import com.wise23.chariteed.model.PractitionerData;
+import com.wise23.chariteed.service.InstructionToPatientService;
+import com.wise23.chariteed.service.PatientService;
 import com.wise23.chariteed.service.PractitionerService;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.Practitioner;
@@ -20,6 +23,12 @@ public class PractitionerController {
 
     @Autowired
     PractitionerService practitionerService;
+
+    @Autowired
+    PatientService patientService;
+
+    @Autowired
+    InstructionToPatientService instructionToPatientService;
 
 
     @GetMapping("/view/all")
@@ -45,7 +54,20 @@ public class PractitionerController {
             log.debug(e.getMessage());
         }
 
+        model.addAttribute("ratingDescription", patientService.getRatingDescription());
+
         return "/practitioner/instructionsGiven";
     }
+
+    @RequestMapping("/itp-acknowledged/{itpID}")
+    public String acknowledgeFeedback(@PathVariable Long itpID) {
+
+        InstructionToPatient dbITP = instructionToPatientService.getInstructionToPatientById(itpID);
+        instructionToPatientService.acknowledgeFeedback(dbITP);
+
+        return "redirect:/practitioner/view/" + dbITP.getPractitioner().getFhirId();
+
+    }
+
 
 }

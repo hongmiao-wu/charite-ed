@@ -2,7 +2,9 @@ package com.wise23.chariteed.service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import com.wise23.chariteed.model.InstructionToPatient;
@@ -27,9 +29,6 @@ public class PatientService {
 
     @Autowired
     InstructionToPatientRepository instructionToPatientRepository;
-
-    //feedback time
-    Long timeForFeedbackInHours = Long.valueOf(24 * 3);
 
     public FhirContext fhirContext;
     public IGenericClient client;
@@ -79,20 +78,31 @@ public class PatientService {
         return patientDataRepository.findPatientDataByFhirId(fhirID).orElse(null);
     }
 
-    public InstructionToPatient timeForFeedback(Long fhirID) {
-        InstructionToPatient latestInstruction = instructionToPatientRepository.findLatestInstructionOfPatient(fhirID).orElse(null);
+    public InstructionToPatient getLatestInstruction(Long patientFhirID) {
+        return instructionToPatientRepository.findLatestInstructionOfPatient(patientFhirID).orElse(null);
+    }
 
-        if (latestInstruction == null) {
-            return null;
+    public Boolean timeForFeedback(InstructionToPatient instructionToPatient) {
+        if (instructionToPatient == null) {
+            return false;
         }
 
-        LocalDateTime instructionTime = latestInstruction.getGivenAt();
-        Long timePassed = ChronoUnit.HOURS.between(instructionTime, LocalDateTime.now());
-
-        if (timePassed > timeForFeedbackInHours) {
-            return latestInstruction;
+        LocalDateTime instructionTime = instructionToPatient.getGivenAt();
+        Long timePassed = ChronoUnit.DAYS.between(instructionTime, LocalDateTime.now());
+        if (timePassed >= instructionToPatient.getFeedbackInDays()) {
+            return true;
         }
 
-        return null;
+        return false;
+    }
+
+    public Map<Integer, String> getRatingDescription() {
+        Map<Integer, String> ratingDescription = new HashMap<>();
+        ratingDescription.put(1, "Significantly worse");
+        ratingDescription.put(2, "Slightly worse");
+        ratingDescription.put(3, "Neutral");
+        ratingDescription.put(4, "Slightly better");
+        ratingDescription.put(5, "Significantly better");
+        return ratingDescription;
     }
 }

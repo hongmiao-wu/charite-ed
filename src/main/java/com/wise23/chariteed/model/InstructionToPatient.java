@@ -1,19 +1,17 @@
 package com.wise23.chariteed.model;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.Entity;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name ="instruction_to_patient")
-@Data
-@NoArgsConstructor
 public class InstructionToPatient {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -36,6 +34,9 @@ public class InstructionToPatient {
 
     @Column(name = "given_at", updatable = false)
     LocalDateTime givenAt;
+
+    @Column(name = "feedback_in_days")
+    Integer feedbackInDays;
 
     @Column(name = "practitioner_comment")
     String practitionerComment;
