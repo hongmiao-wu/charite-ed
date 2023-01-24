@@ -3,6 +3,7 @@ package com.wise23.chariteed.controller;
 import com.wise23.chariteed.model.Instruction;
 import com.wise23.chariteed.service.InstructionService;
 import lombok.extern.slf4j.Slf4j;
+import org.hl7.fhir.r4.model.Bundle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -58,6 +59,22 @@ public class InstructionController {
         instructionService.deleteInstruction(id);
 
         return "redirect:/instruction/view/all";
+    }
+
+    @RequestMapping("/extern")
+    public String externalMedicationStatements(Model model) {
+        List<Instruction> hapiFhirInstructions = instructionService.fetchHapiFhirInstructionsBundle();
+        model.addAttribute("allInstructions", hapiFhirInstructions);
+
+        return "/instruction/medicalstatements";
+    }
+
+    @RequestMapping("/create/{msFhirID}")
+    public String createInstructionFromExternal(@PathVariable Long msFhirID, Model model) {
+        Instruction msInstruction = instructionService.fetchHapiFhirInstructionByFhirId(msFhirID);
+        model.addAttribute("instruction", msInstruction);
+
+        return "instruction/createInstruction";
     }
 
 

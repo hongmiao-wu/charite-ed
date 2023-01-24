@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>All instructions</title>
+  <title th:if="${patientData != null}" th:text="|${patientData.fhirId} - ': Patient dashboard'|">Dashboard</title>
+  <title th:if="${patientData == null}">Dashboard</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -22,11 +23,9 @@
     <table class="table table-striped table-responsive-md">
       <thead>
       <tr>
-        <th>ID</th>
-        <th>Title</th>
+        <th>FHIR ID</th>
         <th>Content</th>
-        <th>Author</th>
-        <th>Creation time</th>
+        <th>Save</th>
       </tr>
       </thead>
       <tbody>
@@ -34,20 +33,15 @@
         <td>No instructions found</td>
       </tr>
       <tr th:each="instr : ${allInstructions}">
-        <td th:text="${instr.id}"></td>
-        <td>
-          <a th:href="@{/instruction/view/{id}(id=${instr.id})}" th:text="${instr.title}"></a>
-        </td>
+        <td th:text="${instr.title}"></td>
         <td th:text="${instr.content}"></td>
-        <td th:text="${instr.createdBy}"></td>
-        <td th:text="${instr.createdAt}"></td>
+        <td><a th:href="@{/instruction/create/{msFhirID}(msFhirID=${instr.title})}" class="btn btn-success">+</a></td>
       </tr>
       </tbody>
     </table>
 
     <div>
       <a th:href="@{/instruction/create}" class="btn btn-primary">Create instruction</a>
-      <a th:href="@{/instruction/extern}" class="btn btn-primary">Show HAPI FHIR instructions</a>
       <a th:href="@{/instruction/view/all}" class="btn btn-info">View all instructions</a>
       <a th:href="@{/patient/view/all}" class="btn btn-info">View all patients</a>
       <a th:href="@{/practitioner/view/all}" class="btn btn-info">View all practitioners</a>

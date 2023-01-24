@@ -30,7 +30,7 @@
           <label class="control-label col-sm-2" for="content">Content</label>
           <div class="col-sm-10">
             <!--/* do not use th:field here, otherwise body can not be initialized (and is overriden by the th:field value) */-->
-            <textarea id="content" class="form-control ckeditor" name="content">
+            <textarea id="content" class="form-control ckeditor" th:field="*{content}">
             </textarea>
           </div>
         </div>

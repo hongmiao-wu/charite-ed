@@ -2,6 +2,7 @@ package com.wise23.chariteed.model;
 
 import javax.persistence.*;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
