@@ -9,7 +9,7 @@
     <p th:text="'Name: ' + ${doctor.getFirstName()} + ' ' + ${doctor.getLastName()}" />
     <p th:text="'Password: ' + ${doctor.getPassword()}" />
     <p><a href="/admin/dashboard/generateDoctor">Add another Doctor</a></p>
-    <p><a th:href="@{/}">Home</a></p>
+    <p><a href="/admin/dashboard">Home</a></p>
     <p><a th:href="@{/logout}">Log out</a></p>
 </body>
 </html>

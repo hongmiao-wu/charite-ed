@@ -5,9 +5,8 @@
 </head>
 <body>
   <h2>Welcome to Doctor Dashboard</h2>
-  <p>Logged as: <span sec:authentication="name"></span></p>
-  <p>Has role: <span sec:authentication="authorities"></span></p>
-  <p><a th:href="@{/}">Home</a></p>
+  <p th:text="'Logged in as: ' + ${doctor.firstName} + ' ' + ${doctor.lastName}" />
+  <p th:text="'Has role: ' + ${doctor.role}" />
   <p><a th:href="@{/doctor/dashboard/generatePatient}">Add patient</a></p>
   <p><a th:href="@{/logout}">Log out</a></p>
 </body>

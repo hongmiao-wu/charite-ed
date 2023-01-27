@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
 import java.sql.Blob;
@@ -38,16 +37,20 @@ public class PatientController {
     ResourceLoader resourceLoader;
 
     @RequestMapping(method = RequestMethod.GET)
-    public String homePage(Principal principal, Model model) throws SQLException {
-        User user = userService.getUser(principal.getName());
-        model.addAttribute("user", user);
+    public String homePage(Principal principal, Model model) {
+        User patient = userService.getUser(principal.getName());
+        model.addAttribute("patient", patient);
         return "patient/dashboard";
+    }
+
+    @RequestMapping(value = "/eNumbers", method = RequestMethod.GET)
+    public String eNumbers() {
+        return "patient/dashboard/eNumbers";
     }
 
     @GetMapping("/download")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(HttpServletResponse response, Principal principal)
-            throws SQLException, IOException {
+    public ResponseEntity<Resource> serveFile(HttpServletResponse response, Principal principal) {
 
         User user = userService.getUser(principal.getName());
         Blob test = user.getFile();
