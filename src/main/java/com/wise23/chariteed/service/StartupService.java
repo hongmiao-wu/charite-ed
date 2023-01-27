@@ -19,4 +19,15 @@ public class StartupService {
         User admin = new User("root", "root", "admin@example.com", "password", "9991234567", Role.ADMIN);
         userService.saveUser(admin);
     }
+    @EventListener(ApplicationReadyEvent.class)
+    public void createPatient() {
+        User patient = new User("patient", "patient", "patient@example.com", "password", "9991234568", Role.PATIENT);
+        userService.saveUser(patient);
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void createPractitioner() {
+        User practitioner = new User("practitioner", "practitioner", "practitioner@example.com", "password", "9991234569", Role.PRACTITIONER);
+        userService.saveUser(practitioner);
+    }
 }

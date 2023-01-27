@@ -9,6 +9,7 @@
   <p th:text="'Has role: ' + ${patient.role}" />
   <p th:text="'Condition: ' + ${patient.condition}" />
   <a href="/patient/dashboard/download">Download doctor's letter</a>
+  <p><a th:href="@{/index.html}">Send Messages</a></p>
   <div>
     <p><a th:href="@{/patient/dashboard/eNumbers}">Emergency numbers</a></p>
     <p><a th:href="@{/logout}">Log out</a></p>
