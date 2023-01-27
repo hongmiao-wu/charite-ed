@@ -5,11 +5,12 @@
 </head>
 <body>
   <h2>Welcome to Patient Dashboard</h2>
-  <p>Logged as: <span sec:authentication="name"></span></p>
-  <p>Has role: <span sec:authentication="authorities"></span></p>
+  <p th:text="'Logged in as: ' + ${patient.firstName} + ' ' + ${patient.lastName}" />
+  <p th:text="'Has role: ' + ${patient.role}" />
+  <p th:text="'Condition: ' + ${patient.condition}" />
   <a href="/patient/dashboard/download">Download doctor's letter</a>
   <div>
-    <p><a th:href="@{/}">Home</a></p>
+    <p><a th:href="@{/patient/dashboard/eNumbers}">Emergency numbers</a></p>
     <p><a th:href="@{/logout}">Log out</a></p>
   </div>
 </body>

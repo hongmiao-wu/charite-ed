@@ -9,7 +9,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.sql.rowset.serial.SerialBlob;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
@@ -20,7 +19,10 @@ import java.util.Collections;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter @AllArgsConstructor @NoArgsConstructor
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class User implements UserDetails {
     @SequenceGenerator(name = "users_sequence", sequenceName = "users_sequence", allocationSize = 1)
     @Id
@@ -28,6 +30,7 @@ public class User implements UserDetails {
     private Long id;
 
     private String patientID;
+    private String condition;
 
     @Lob
     private Blob file;
@@ -80,8 +83,9 @@ public class User implements UserDetails {
         this.role = role;
     }
 
+    // For creating a patient user
     public User(String firstName, String lastName, String email, String password, String mobile, Role role,
-                String patientID, Blob file) {
+            String patientID, Blob file, String condition) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -90,7 +94,9 @@ public class User implements UserDetails {
         this.role = role;
         this.patientID = patientID;
         this.file = file;
+        this.condition = condition;
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());

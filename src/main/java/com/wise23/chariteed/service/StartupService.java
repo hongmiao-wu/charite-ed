@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.wise23.chariteed.model.Role;
 import com.wise23.chariteed.model.User;
-import com.wise23.chariteed.service.UserService;
 
 @Service
 public class StartupService {

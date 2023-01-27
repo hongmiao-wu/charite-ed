@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,18 +36,25 @@ public class AdminController {
     UserRepository userRepository;
 
     @RequestMapping(value = { "/admin/dashboard" }, method = RequestMethod.GET)
-    public String adminHome() {
+    public String adminHome(Model model) {
+
+        List<User> practitioners = userRepository.findByRole(Role.PRACTITIONER);
+        List<User> patients = userRepository.findByRole(Role.PATIENT);
+
+        model.addAttribute("practitioners", practitioners);
+        model.addAttribute("patients", patients);
+
         return "/admin/dashboard";
     }
 
     @RequestMapping(value = { "/admin/dashboard/generateDoctor" }, method = RequestMethod.GET)
-    public String generatePatient(Model model) {
+    public String generatePractitioner(Model model) {
         model.addAttribute("generateDoctor", new PractitionerGenerator());
         return "/admin/dashboard/generateDoctor";
     }
 
     @PostMapping("/admin/dashboard/generateDoctor")
-    public String generatePatientSubmit(@ModelAttribute PractitionerGenerator generator, Model model) {
+    public String generatePractitionerSubmit(@ModelAttribute PractitionerGenerator generator, Model model) {
 
         String passwd = PractitionerService.generatePassword(generator.getFirstName(), generator.getLastName());
 
@@ -70,5 +80,13 @@ public class AdminController {
         System.out.println("Doctor " + user.getLastName() + " created\nPassword is: " + generator.getPassword());
 
         return "/admin/dashboard/doctorGenerated";
+    }
+
+    @PostMapping("/admin/deleteUser")
+    public String deleteUser(@RequestParam("firstName") String firstName,
+            @RequestParam("lastName") String lastName,
+            @RequestParam("mobile") String mobile) {
+        userRepository.deleteByFullNameAndMobile(firstName, lastName, mobile);
+        return "redirect:/admin/dashboard";
     }
 }
