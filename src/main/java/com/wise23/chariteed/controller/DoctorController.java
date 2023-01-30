@@ -25,6 +25,7 @@ import com.google.zxing.WriterException;
 import java.io.IOException;
 import java.security.Principal;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
@@ -62,32 +63,42 @@ public class DoctorController {
         model.addAttribute("patient", generator);
 
         String patientData = patientService.getPatientData(id);
-        String patientCondition = patientService.getCondition(id);
+        List<String> patientCondition = patientService.getCondition(id);
 
         if (patientCondition == null) {
             return "/doctor/dashboard/error";
         }
 
-        generator.setPassword(patientService.generatePassword(patientData));
-
         JsonObject name = JsonParser.parseString(patientData).getAsJsonObject().get("name").getAsJsonArray().get(0)
                 .getAsJsonObject();
 
-        // User creation with lots of dummy data
-        byte[] file_bytes = generator.getFile().getBytes();
-        User user = new User(name.get("given").getAsJsonArray().get(0).getAsString(), name.get("family").getAsString(),
-                "test@mail.de", generator.getPassword(), "2222222222", Role.PATIENT, id,
-                new SerialBlob(file_bytes), patientCondition);
+        String firstName = name.get("given").getAsJsonArray().get(0).getAsString();
+        String lastName = name.get("family").getAsString();
 
-        if (userRepository.existsByEmailAndMobile(user.getEmail(), user.getMobile())) {
-            logger.error("ERROR: Patient Account already exists!");
-            return "/doctor/dashboard/error";
+        User user = userRepository.findByFirstNameAndLastName(firstName, lastName);
+
+        if (user == null) {
+            // User creation with lots of dummy data
+            generator.setPassword(patientService.generatePassword(patientData));
+            byte[] file_bytes = generator.getFile().getBytes();
+            user = new User(firstName, lastName, "test@mail.de", generator.getPassword(), "2222222222",
+                    Role.PATIENT,
+                    id, new SerialBlob(file_bytes), patientCondition);
+
+            if (userRepository.existsByEmailAndMobile(user.getEmail(), user.getMobile())) {
+                logger.error("ERROR: Patient Account already exists!");
+                return "/doctor/dashboard/error";
+            }
+
+            userService.saveUser(user);
+        } else if (user.getConditions().get(0) != patientCondition.get(0)) {
+            user.setConditions(patientCondition);
+            userRepository.save(user);
         }
 
         // QR code generation
         QRCodeGenerator.createQRImage(id);
 
-        userService.saveUser(user);
         System.out.println("Patient " + user.getLastName() + " created\nPassword is: " + generator.getPassword());
 
         return "/doctor/dashboard/patientGenerated";

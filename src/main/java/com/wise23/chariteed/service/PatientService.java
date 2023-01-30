@@ -1,5 +1,6 @@
 package com.wise23.chariteed.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -42,7 +43,9 @@ public class PatientService {
                 .encodeResourceToString(patient);
     }
 
-    public String getCondition(String fhirID) {
+    public List<String> getCondition(String fhirID) {
+        List<String> conditionsList = new ArrayList<>();
+
         Bundle bundle = this.client
                 .search()
                 .forResource(Condition.class)
@@ -61,11 +64,11 @@ public class PatientService {
         for (Bundle.BundleEntryComponent entry : entries) {
             if (entry.getResource().fhirType().equals("Condition")) {
                 Condition condition = (Condition) entry.getResource();
-                return condition.getCode().getCoding().get(0).getDisplay();
+                conditionsList.add(condition.getCode().getCoding().get(0).getDisplay());
             }
         }
 
-        return null;
+        return conditionsList;
     }
 
     public String generatePassword(String patientData) {
