@@ -3,15 +3,11 @@ package com.wise23.chariteed.service;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.util.BundleUtil;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.wise23.chariteed.GetPropertiesBean;
+import com.wise23.chariteed.constant.GetPropertiesBean;
 import com.wise23.chariteed.config.FhirConfig;
 import com.wise23.chariteed.model.Instruction;
 import com.wise23.chariteed.repository.InstructionRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Slf4j
 @Service
@@ -85,6 +82,9 @@ public class InstructionService {
         instruction.setTitle(ms.getIdElement().getIdPart());
         String content;
 
+        //hapi fhir server data is inconsistent:
+        //sometimes MedicationCodeableConcept is present,
+        //and sometimes MedicationReference is present instead...
         try {
             content = ms.getMedicationCodeableConcept().getText();
         }

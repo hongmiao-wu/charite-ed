@@ -28,4 +28,8 @@ public class PractitionerData {
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "practitioner")
     Set<InstructionToPatient> givenInstructions;
+
+    private String firstname;
+
+    private String lastname;
 }
