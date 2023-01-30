@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class PractitionerService {
@@ -18,6 +19,7 @@ public class PractitionerService {
     PractitionerDataRepository practitionerDataRepository;
 
     public FhirContext fhirContext;
+
     public IGenericClient client;
 
     public PractitionerService() {
@@ -25,11 +27,19 @@ public class PractitionerService {
         this.client = fhirContext.newRestfulGenericClient(GetPropertiesBean.getTestserverURL());
     }
 
+
     public PractitionerData findByFhirId(Long fhirID) {
         return practitionerDataRepository.findPractitionerDataByFhirId(fhirID).orElse(null);
     }
 
     public List<PractitionerData> getAllPractitioners() {
         return practitionerDataRepository.findAll();
+    }
+
+    public static String generatePassword(String firstName, String lastName) {
+        Random rand = new Random();
+        int randomNumber = 100000 + rand.nextInt(900000);
+
+        return firstName + "_" + lastName + "_" + randomNumber;
     }
 }

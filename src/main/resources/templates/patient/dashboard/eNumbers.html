@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Emergency numbers</title>
+</head>
+
+<body>
+    <h2>Here are some emergency numbers</h2>
+    <style type="text/css">
+        .tg {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+    
+        .tg td {
+            border-color: black;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            overflow: hidden;
+            padding: 10px 5px;
+            word-break: normal;
+        }
+    
+        .tg th {
+            border-color: black;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: normal;
+            overflow: hidden;
+            padding: 10px 5px;
+            word-break: normal;
+        }
+    
+        .tg .tg-c3ow {
+            border-color: inherit;
+            text-align: center;
+            vertical-align: top
+        }
+    </style>
+    <table class="tg">
+        <thead>
+            <tr>
+                <th class="tg-c3ow"><span style="font-weight:bold">Phone number</span></th>
+                <th class="tg-c3ow"><span style="font-weight:bold">Description</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="tg-c3ow">112</td>
+                <td class="tg-c3ow">Feuerwehr und Rettungsdienst in lebensbedrohlichen Notfällen</td>
+            </tr>
+            <tr>
+                <td class="tg-c3ow">110</td>
+                <td class="tg-c3ow">Polizeinotruf zur Meldung von Unfällen, Straftaten und Gefahren</td>
+            </tr>
+            <tr>
+                <td class="tg-c3ow">116117</td>
+                <td class="tg-c3ow">Ärztlicher Bereitschaftsdienst sowie Kinderärztlicher Bereitschaftsdienst für nicht
+                    lebensbedrohliche Erkrankngen außerhalb der ärztlichen Sprechzeiten</td>
+            </tr>
+            <tr>
+                <td class="tg-c3ow">030-19240</td>
+                <td class="tg-c3ow">Giftnotruf der Charité bei Vergiftungen oder Vergiftungsverdacht</td>
+            </tr>
+            <tr>
+                <td class="tg-c3ow">030-89004333</td>
+                <td class="tg-c3ow">Zahnärztlicher Notfalldienst für Beschwerden außerhalb der ärztlichen Sprechzeiten</td>
+            </tr>
+            <tr>
+                <td class="tg-c3ow">030-450570270</td>
+                <td class="tg-c3ow">Gewaltschutzambulanz Berlin für die Untersuchung &amp; Dokumentation von Menschen die
+                    körperliche Gewalt erlebt haben (auch anonym möglich)</td>
+            </tr>
+            <tr>
+                <td class="tg-c3ow">030-19727</td>
+                <td class="tg-c3ow">Krankentransport DRK für den Transport kranker Menschen</td>
+            </tr>
+            <tr>
+                <td class="tg-c3ow">Notruf-App Nora</td>
+                <td class="tg-c3ow">App für Hör– und/oder Sprachbehinderte Menschen, um einen Notruf abzusetzen.<br>Ebenso
+                    besteht die Möglichkeit einen „stillen Notruf“ abzusetzen, wenn der Notruf möglichst unbemerkt bleiben
+                    sollte</td>
+            </tr>
+            <tr>
+                <td class="tg-c3ow">0800-0022833</td>
+                <td class="tg-c3ow">Apotheken Notdienst</td>
+            </tr>
+            <tr>
+                <td class="tg-c3ow">030-20614190</td>
+                <td class="tg-c3ow">Apotheke Hauptbahnhof Berlin</td>
+            </tr>
+        </tbody>
+    </table>
+    <div>
+        <p><a th:href="@{/patient/dashboard}">Home</a></p>
+    </div>
+</body>
+
+</html>

@@ -1,4 +1,4 @@
-package com.wise23.chariteed;
+package com.wise23.chariteed.constant;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

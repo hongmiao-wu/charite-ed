@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Doctor Dashboard</title>
+</head>
+<body>
+  <h2>Welcome to Doctor Dashboard</h2>
+  <p th:text="'Logged in as: ' + ${doctor.firstName} + ' ' + ${doctor.lastName}" />
+  <p th:text="'Has role: ' + ${doctor.role}" />
+  <p><a th:href="@{/doctor/dashboard/generatePatient}">Add patient</a></p>
+  <p><a th:href="@{/logout}">Log out</a></p>
+</body>
+</html>

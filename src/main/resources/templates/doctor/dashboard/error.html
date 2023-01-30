@@ -1,0 +1,13 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<head> 
+    <title>Error creating patient</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h1>ERROR: Patient ID does not exist, no valid condition entry or patient already existing.</h1>
+    <p><a href="/doctor/dashboard/generatePatient">Add patient</a></p>
+    <p><a th:href="@{/doctor/dashboard}">Home</a></p>
+    <p><a th:href="@{/logout}">Log out</a></p>
+</body>
+</html>

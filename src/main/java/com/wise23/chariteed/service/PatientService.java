@@ -1,12 +1,15 @@
 package com.wise23.chariteed.service;
 
+import java.util.List;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.Patient;
 import com.wise23.chariteed.model.InstructionToPatient;
 import com.wise23.chariteed.model.PatientData;
 import com.wise23.chariteed.repository.InstructionToPatientRepository;
@@ -31,11 +34,53 @@ public class PatientService {
     InstructionToPatientRepository instructionToPatientRepository;
 
     public FhirContext fhirContext;
+
     public IGenericClient client;
 
     public PatientService() {
         this.fhirContext = FhirConfig.getFhirContext();
         this.client = fhirContext.newRestfulGenericClient(GetPropertiesBean.getTestserverURL());
+    }
+
+    public String getPatientData(String fhirID) {
+        Patient patient = null;
+
+        // In case that the ID is not existing.
+        try {
+            patient = this.client.read().resource(Patient.class).withId(fhirID).execute();
+        } catch (Exception e) {
+            System.out.println("ERROR: Patient ID does not exist.");
+            return "/doctor/dashboard/error";
+        }
+
+        return this.fhirContext.newJsonParser().setPrettyPrint(true)
+                .encodeResourceToString(patient);
+    }
+
+    public String getCondition(String fhirID) {
+        Bundle bundle = this.client
+                .search()
+                .forResource(Condition.class)
+                .where(Condition.PATIENT.hasId(
+                        fhirID))
+                .returnBundle(Bundle.class)
+                .execute();
+
+        List<Bundle.BundleEntryComponent> entries = bundle.getEntry();
+
+        if (entries.size() == 0) {
+            System.out.println("ERROR: No condition available.");
+            return null;
+        }
+
+        for (Bundle.BundleEntryComponent entry : entries) {
+            if (entry.getResource().fhirType().equals("Condition")) {
+                Condition condition = (Condition) entry.getResource();
+                return condition.getCode().getCoding().get(0).getDisplay();
+            }
+        }
+
+        return null;
     }
 
     public String generatePassword(String patientData) {

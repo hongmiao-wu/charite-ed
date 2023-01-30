@@ -1,0 +1,15 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<head> 
+    <title>Result</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h1>Doctor created.</h1>
+    <p th:text="'Name: ' + ${doctor.getFirstName()} + ' ' + ${doctor.getLastName()}" />
+    <p th:text="'Password: ' + ${doctor.getPassword()}" />
+    <p><a href="/admin/dashboard/generateDoctor">Add another Doctor</a></p>
+    <p><a href="/admin/dashboard">Home</a></p>
+    <p><a th:href="@{/logout}">Log out</a></p>
+</body>
+</html>
