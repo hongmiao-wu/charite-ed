@@ -1,19 +1,28 @@
 package com.wise23.chariteed.controller;
 
-import com.wise23.chariteed.model.InstructionToPatient;
-import com.wise23.chariteed.model.PractitionerData;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.zxing.WriterException;
+import com.wise23.chariteed.constant.QRCodeGenerator;
+import com.wise23.chariteed.model.*;
 import com.wise23.chariteed.service.InstructionToPatientService;
 import com.wise23.chariteed.service.PatientService;
 import com.wise23.chariteed.service.PractitionerService;
+import com.wise23.chariteed.service.UserDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.Practitioner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
+import java.io.IOException;
+import java.security.Principal;
+import java.sql.SQLException;
 import java.util.List;
 
 @Slf4j
@@ -29,6 +38,11 @@ public class PractitionerController {
 
     @Autowired
     InstructionToPatientService instructionToPatientService;
+
+    @Autowired
+    UserDataService userDataService;
+
+    Logger logger = LoggerFactory.getLogger(PractitionerController.class);
 
 
     @GetMapping("/view/all")
@@ -57,6 +71,57 @@ public class PractitionerController {
         model.addAttribute("ratingDescription", patientService.getRatingDescription());
 
         return "/practitioner/instructionsGiven";
+    }
+
+    @RequestMapping(value = { "/dashboard" }, method = RequestMethod.GET)
+    public String doctorHome(Principal principal, Model model) {
+        UserData doctor = userDataService.getUserData(principal.getName());
+        model.addAttribute("doctor", doctor);
+        return "/practitioner/dashboard";
+    }
+
+    @RequestMapping(value = { "/dashboard/generatePatient" }, method = RequestMethod.GET)
+    public String generatePatient(Model model) {
+        model.addAttribute("generatePatient", new PatientGenerator());
+        return "/practitioner/dashboard/generatePatient";
+    }
+
+    @PostMapping("/dashboard/generatePatient")
+    public String generatePatientSubmit(@ModelAttribute PatientGenerator generator, Model model)
+            throws WriterException, IOException, SerialException, SQLException {
+        String id = Long.toString(generator.getId());
+        model.addAttribute("patient", generator);
+
+        String patientData = patientService.getPatientData(id);
+        String patientCondition = patientService.getCondition(id);
+
+        if (patientCondition == null) {
+            return "/practitioner/dashboard/error";
+        }
+
+        generator.setPassword(patientService.generatePassword(patientData));
+
+        JsonObject name = JsonParser.parseString(patientData).getAsJsonObject().get("name").getAsJsonArray().get(0)
+                .getAsJsonObject();
+
+        // User creation with lots of dummy data
+        byte[] file_bytes = generator.getFile().getBytes();
+        UserData user = new UserData(name.get("given").getAsJsonArray().get(0).getAsString(), name.get("family").getAsString(),
+                "test@mail.de", generator.getPassword(), "2222222222", Role.PATIENT, id,
+                new SerialBlob(file_bytes), patientCondition);
+
+        if (userDataService.userExists(user)) {
+            logger.error("ERROR: Patient Account already exists!");
+            return "/practitioner/dashboard/error";
+        }
+
+        // QR code generation
+        QRCodeGenerator.createQRImage(id);
+
+        userDataService.saveUserData(user);
+        System.out.println("Patient " + user.getLastName() + " created\nPassword is: " + generator.getPassword());
+
+        return "/practitioner/dashboard/patientGenerated";
     }
 
     @RequestMapping("/itp-acknowledged/{itpID}")

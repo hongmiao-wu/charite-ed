@@ -44,4 +44,8 @@ public class UserDataService implements UserDetailsService {
         return userDataRepository.findByFirstName(email)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("USER_NOT_FOUND", email)));
     }
+
+    public boolean userExists(UserData user) {
+        return userDataRepository.existsByEmailAndMobile(user.getEmail(), user.getMobile());
+    }
 }
