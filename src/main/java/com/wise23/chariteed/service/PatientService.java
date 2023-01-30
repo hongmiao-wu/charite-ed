@@ -50,7 +50,7 @@ public class PatientService {
             patient = this.client.read().resource(Patient.class).withId(fhirID).execute();
         } catch (Exception e) {
             System.out.println("ERROR: Patient ID does not exist.");
-            return "/doctor/dashboard/error";
+            return "/practitioner/dashboard/error";
         }
 
         return this.fhirContext.newJsonParser().setPrettyPrint(true)
