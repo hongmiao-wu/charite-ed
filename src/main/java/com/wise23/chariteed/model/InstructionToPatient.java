@@ -6,6 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.Entity;
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,9 +21,8 @@ public class InstructionToPatient {
     private Long id;
 
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="instruction_id")
-    Instruction instruction;
+    @OneToMany(mappedBy = "instruction", fetch = FetchType.EAGER)
+    Set<Instruction> instructionSet = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "practitioner_id")
