@@ -2,7 +2,7 @@ package com.wise23.chariteed.service;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import com.wise23.chariteed.GetPropertiesBean;
+import com.wise23.chariteed.constant.GetPropertiesBean;
 import com.wise23.chariteed.config.FhirConfig;
 import com.wise23.chariteed.model.PractitionerData;
 import com.wise23.chariteed.repository.PractitionerDataRepository;

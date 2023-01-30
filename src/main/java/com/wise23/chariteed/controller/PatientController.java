@@ -2,13 +2,12 @@ package com.wise23.chariteed.controller;
 
 import com.wise23.chariteed.model.InstructionToPatient;
 import com.wise23.chariteed.model.PatientData;
-import com.wise23.chariteed.model.PractitionerData;
+import com.wise23.chariteed.model.UserData;
 import com.wise23.chariteed.model.dto.PatientFeedbackData;
 import com.wise23.chariteed.service.InstructionToPatientService;
-import com.wise23.chariteed.model.User;
 import com.wise23.chariteed.service.PatientService;
-import com.wise23.chariteed.service.UserService;
 
+import com.wise23.chariteed.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -46,7 +45,7 @@ public class PatientController {
     PatientService patientService;
 
     @Autowired
-    UserService userService;
+    UserDataService userDataService;
 
     @Autowired
     ResourceLoader resourceLoader;
@@ -60,7 +59,7 @@ public class PatientController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String homePage(Principal principal, Model model) {
-        User patient = userService.getUser(principal.getName());
+        UserData patient = userDataService.getUserData(principal.getName());
         model.addAttribute("patient", patient);
         return "patient/dashboard";
     }
@@ -74,7 +73,7 @@ public class PatientController {
     @ResponseBody
     public ResponseEntity<Resource> serveFile(HttpServletResponse response, Principal principal) {
 
-        User user = userService.getUser(principal.getName());
+        UserData user = userDataService.getUserData(principal.getName());
         Blob test = user.getFile();
 
         Resource file = convertBlobToResource(test);

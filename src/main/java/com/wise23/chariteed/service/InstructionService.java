@@ -25,8 +25,6 @@ public class InstructionService {
     @Autowired
     InstructionRepository instructionRepository;
 
-    @Autowired
-    UserService userService;
 
     public FhirContext fhirContext;
 

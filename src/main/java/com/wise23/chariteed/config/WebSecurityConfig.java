@@ -1,6 +1,6 @@
 package com.wise23.chariteed.config;
 
-import com.wise23.chariteed.service.UserServiceImpl;
+import com.wise23.chariteed.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +23,7 @@ public class WebSecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return new UserServiceImpl();
+        return new UserDataService();
     }
 
     @Bean

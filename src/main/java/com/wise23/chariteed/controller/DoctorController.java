@@ -2,12 +2,12 @@ package com.wise23.chariteed.controller;
 
 import com.wise23.chariteed.constant.QRCodeGenerator;
 import com.wise23.chariteed.model.Role;
-import com.wise23.chariteed.model.User;
-import com.wise23.chariteed.repository.UserRepository;
+import com.wise23.chariteed.model.UserData;
+import com.wise23.chariteed.repository.UserDataRepository;
 import com.wise23.chariteed.model.PatientGenerator;
 import com.wise23.chariteed.service.PatientService;
-import com.wise23.chariteed.service.UserService;
 
+import com.wise23.chariteed.service.UserDataService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -37,14 +37,14 @@ public class DoctorController {
     Logger logger = LoggerFactory.getLogger(DoctorController.class);
 
     @Autowired
-    UserService userService;
+    UserDataService userDataService;
 
     @Autowired
-    UserRepository userRepository;
+    UserDataRepository userDataRepository;
 
     @RequestMapping(value = { "/doctor/dashboard" }, method = RequestMethod.GET)
     public String doctorHome(Principal principal, Model model) {
-        User doctor = userService.getUser(principal.getName());
+        UserData doctor = userDataService.getUserData(principal.getName());
         model.addAttribute("doctor", doctor);
         return "doctor/dashboard";
     }
@@ -75,11 +75,11 @@ public class DoctorController {
 
         // User creation with lots of dummy data
         byte[] file_bytes = generator.getFile().getBytes();
-        User user = new User(name.get("given").getAsJsonArray().get(0).getAsString(), name.get("family").getAsString(),
+        UserData user = new UserData(name.get("given").getAsJsonArray().get(0).getAsString(), name.get("family").getAsString(),
                 "test@mail.de", generator.getPassword(), "2222222222", Role.PATIENT, id,
                 new SerialBlob(file_bytes), patientCondition);
 
-        if (userRepository.existsByEmailAndMobile(user.getEmail(), user.getMobile())) {
+        if (userDataRepository.existsByEmailAndMobile(user.getEmail(), user.getMobile())) {
             logger.error("ERROR: Patient Account already exists!");
             return "/doctor/dashboard/error";
         }
@@ -87,7 +87,7 @@ public class DoctorController {
         // QR code generation
         QRCodeGenerator.createQRImage(id);
 
-        userService.saveUser(user);
+        userDataService.saveUserData(user);
         System.out.println("Patient " + user.getLastName() + " created\nPassword is: " + generator.getPassword());
 
         return "/doctor/dashboard/patientGenerated";

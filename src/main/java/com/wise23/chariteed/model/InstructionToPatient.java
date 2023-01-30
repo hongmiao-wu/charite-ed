@@ -21,7 +21,11 @@ public class InstructionToPatient {
     private Long id;
 
 
-    @OneToMany(mappedBy = "instruction", fetch = FetchType.EAGER)
+    @ManyToMany
+    @JoinTable(name = "instruction_to_patient_has_instructions",
+            joinColumns = {@JoinColumn(name = "instruction_to_patient_id", referencedColumnName = "instruction_to_patient_id")},
+            inverseJoinColumns = {@JoinColumn(name = "instruction_id", referencedColumnName = "instruction_id")}
+    )
     Set<Instruction> instructionSet = new HashSet<>();
 
     @ManyToOne

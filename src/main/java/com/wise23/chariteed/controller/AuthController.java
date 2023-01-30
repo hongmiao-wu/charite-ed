@@ -1,8 +1,8 @@
 package com.wise23.chariteed.controller;
 
-import com.wise23.chariteed.model.User;
-import com.wise23.chariteed.repository.UserRepository;
-import com.wise23.chariteed.service.UserService;
+import com.wise23.chariteed.model.UserData;
+import com.wise23.chariteed.repository.UserDataRepository;
+import com.wise23.chariteed.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,10 +15,10 @@ import javax.validation.Valid;
 @Controller
 public class AuthController {
     @Autowired
-    UserService userService;
+    UserDataService userDataService;
 
     @Autowired
-    UserRepository userRepository;
+    UserDataRepository userDataRepository;
 
     @RequestMapping(value = { "/login" }, method = RequestMethod.GET)
     public String login() {
@@ -27,23 +27,23 @@ public class AuthController {
 
     @RequestMapping(value = { "/register" }, method = RequestMethod.GET)
     public String register(Model model) {
-        model.addAttribute("user", new User());
+        model.addAttribute("user", new UserData());
         return "auth/register";
     }
 
     @RequestMapping(value = { "/register" }, method = RequestMethod.POST)
-    public String registerUser(Model model, @Valid User user, BindingResult bindingResult) {
+    public String registerUser(Model model, @Valid UserData user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorMessage", "Failed to register user!");
             return "auth/register";
         }
 
-        if (userRepository.existsByEmailAndMobile(user.getEmail(), user.getMobile())) {
+        if (userDataRepository.existsByEmailAndMobile(user.getEmail(), user.getMobile())) {
             model.addAttribute("errorMessage", "ERROR: Patient Account already exists!");
             return "auth/register";
         }
 
-        userService.saveUser(user);
+        userDataService.saveUserData(user);
         model.addAttribute("successMessage", "User registered successfully!");
 
         return "auth/login";

@@ -21,7 +21,7 @@ public class PractitionerData {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    User user;
+    UserData user;
 
     @Column(name = "fhir_id", unique = true)
     Long fhirId;
