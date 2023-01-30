@@ -7,7 +7,7 @@
   <h2>Welcome to Patient Dashboard</h2>
   <p th:text="'Logged in as: ' + ${patient.firstName} + ' ' + ${patient.lastName}" />
   <p th:text="'Has role: ' + ${patient.role}" />
-  <p th:text="'Condition: ' + ${patient.condition}" />
+  <p th:text="'Condition: ' + ${patient.getConditions().get(0)}" />
   <a href="/patient/dashboard/download">Download doctor's letter</a>
   <p><a th:href="@{/index.html}">Send Messages</a></p>
   <div>

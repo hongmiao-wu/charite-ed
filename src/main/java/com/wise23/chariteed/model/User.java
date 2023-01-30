@@ -16,6 +16,7 @@ import java.sql.Blob;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -30,7 +31,11 @@ public class User implements UserDetails {
     private Long id;
 
     private String patientID;
-    private String condition;
+
+    @ElementCollection
+    @CollectionTable(name = "conditions", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "condition")
+    private List<String> conditions;
 
     @Lob
     private Blob file;
@@ -85,7 +90,7 @@ public class User implements UserDetails {
 
     // For creating a patient user
     public User(String firstName, String lastName, String email, String password, String mobile, Role role,
-            String patientID, Blob file, String condition) {
+            String patientID, Blob file, List<String> conditions) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -94,7 +99,7 @@ public class User implements UserDetails {
         this.role = role;
         this.patientID = patientID;
         this.file = file;
-        this.condition = condition;
+        this.conditions = conditions;
     }
 
     @Override
