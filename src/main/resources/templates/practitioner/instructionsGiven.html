@@ -17,6 +17,13 @@
         <h1>Practitioner Name</h1>
       </div>
 
+      <th:block th:each="ig : ${practitionerData?.givenInstructions}">
+        <div th:if="${ig.feedbackGiven && !ig.feedbackOpened}" class="alert alert-warning alert-dismissible show" role="alert">
+          <strong>Feedback posted!</strong> Some of your patients posted feedback.
+        </div>
+      </th:block>
+
+
 
       <div th:if="${fhirPractitioner != null}" >
         <h1 th:text="${practitionerData.fhirId}">Practitioner Name</h1>
@@ -49,7 +56,7 @@
           <td th:text="${#temporals.format(ig.givenAt, 'dd-MM-yyyy HH:mm')}"></td>
           <td th:text="${ig.feedbackInDays + ' day(s)'}">Feedback in ? days</td>
           <td th:text="${ig.practitionerComment}"></td>
-          <td th:text="${ig.feedbackRating}">
+          <td>
             <div th:if="${ig.feedbackGiven}">
               <span class="badge bg-secondary">Rating</span>
               <div th:text="${ig.feedbackRating + ' - ' + ratingDescription.get(ig.feedbackRating)}"></div>
