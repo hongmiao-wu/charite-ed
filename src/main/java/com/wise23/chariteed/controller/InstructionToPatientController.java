@@ -1,6 +1,5 @@
 package com.wise23.chariteed.controller;
 
-import com.wise23.chariteed.model.InstructionToPatient;
 import com.wise23.chariteed.model.PractitionerData;
 import com.wise23.chariteed.service.InstructionService;
 import com.wise23.chariteed.service.InstructionToPatientService;
@@ -37,9 +36,10 @@ public class InstructionToPatientController {
         if (practitioner == null) {
             return "redirect:/practitioner/view/all";
         }
-        InstructionToPatient instructionToPatient = new InstructionToPatient();
-        instructionToPatient.setPractitioner(practitioner);
-        model.addAttribute("instructionToPatient", instructionToPatient);
+
+        InstructionsToPatientForm form = new InstructionsToPatientForm();
+        form.setPractitioner(practitioner);
+        model.addAttribute("instructionsToPatientForm", form);
 
         model.addAttribute("allInstructions", instructionService.getAllInstructions());
         model.addAttribute("allPatients", patientService.getAllPatients());
@@ -48,12 +48,10 @@ public class InstructionToPatientController {
     }
 
     @RequestMapping("/assign")
-    public String assignInstructionToPatient(@ModelAttribute InstructionToPatient instructionToPatient) {
+    public String assignInstructionToPatient(@ModelAttribute InstructionsToPatientForm form) {
+        instructionToPatientService.handleForm(form);
 
-        instructionToPatientService.assignInstructionToPatíent(instructionToPatient);
-
-        return "redirect:/practitioner/view/" + instructionToPatient.getPractitioner().getFhirId();
+        return "redirect:/practitioner/view/" + form.getPractitioner().getFhirId();
     }
-
 
 }

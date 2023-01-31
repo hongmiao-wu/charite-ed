@@ -1,13 +1,10 @@
 package com.wise23.chariteed.model;
 
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.Entity;
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -21,12 +18,16 @@ public class InstructionToPatient {
     private Long id;
 
 
-    @ManyToMany
+    /*@ManyToMany
     @JoinTable(name = "instruction_to_patient_has_instructions",
             joinColumns = {@JoinColumn(name = "instruction_to_patient_id", referencedColumnName = "instruction_to_patient_id")},
             inverseJoinColumns = {@JoinColumn(name = "instruction_id", referencedColumnName = "instruction_id")}
     )
-    Set<Instruction> instructionSet = new HashSet<>();
+    Set<Instruction> instructionSet = new HashSet<>();*/
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "instruction_id")
+    Instruction instruction;
 
     @ManyToOne
     @JoinColumn(name = "practitioner_id")
@@ -40,22 +41,37 @@ public class InstructionToPatient {
     @Column(name = "given_at", updatable = false)
     LocalDateTime givenAt;
 
-    @Column(name = "feedback_in_days")
-    Integer feedbackInDays;
-
     @Column(name = "practitioner_comment")
     String practitionerComment;
 
-    @Column(name = "patient_comment")
-    String patientComment;
+    @Column(name = "first_feedback_days")
+    Integer firstFeedbackDays;
 
-    @Column(name = "feedback_rating")
-    Integer feedbackRating;
+    @Column(name = "first_feedback_rating")
+    Integer firstFeedbackRating;
 
-    @Column(name = "feedback_given")
-    Boolean feedbackGiven = false;
+    @Column(name = "first_patient_comment")
+    String firstPatientComment;
 
-    @Column(name = "feedback_opened")
-    Boolean feedbackOpened = false;
+    @Column(name = "first_feedback_given")
+    Boolean firstFeedbackGiven = false;
+
+    @Column(name = "first_feedback_opened")
+    Boolean firstFeedbackOpened = false;
+
+    @Column(name = "second_feedback_days")
+    Integer secondFeedbackDays;
+
+    @Column(name = "second_feedback_rating")
+    Integer secondFeedbackRating;
+
+    @Column(name = "second_patient_comment")
+    String secondPatientComment;
+
+    @Column(name = "second_feedback_given")
+    Boolean secondFeedbackGiven = false;
+
+    @Column(name = "second_feedback_opened")
+    Boolean secondFeedbackOpened = false;
 
 }

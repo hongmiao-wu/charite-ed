@@ -2,7 +2,6 @@ package com.wise23.chariteed.model;
 
 import javax.persistence.*;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,7 +26,7 @@ public class Instruction {
     @Column(name = "created_by", updatable = false)
     private String createdBy;
 
-    private Boolean feedbackNeeded;
+    private Boolean feedbackNeeded = true;
 
     private String title;
 

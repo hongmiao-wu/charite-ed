@@ -18,7 +18,7 @@
       </div>
 
       <th:block th:each="ig : ${practitionerData?.givenInstructions}">
-        <div th:if="${ig.feedbackGiven && !ig.feedbackOpened}" class="alert alert-warning alert-dismissible show" role="alert">
+        <div th:if="${(ig.firstFeedbackGiven && !ig.firstFeedbackOpened) || (ig.secondFeedbackGiven && !ig.secondFeedbackOpened)}" class="alert alert-warning alert-dismissible show" role="alert">
           <strong>Feedback posted!</strong> Some of your patients posted feedback.
         </div>
       </th:block>
@@ -54,21 +54,37 @@
           <td><a th:href="@{/patient/view/{fhirID}(fhirID=${ig.patient.fhirId})}" th:text="${ig.patient.fhirId}"></a></td>
           <td><a th:href="@{/instruction/view/{id}(id=${ig.instruction.id})}" th:text="${ig.instruction.title}"></a></td>
           <td th:text="${#temporals.format(ig.givenAt, 'dd-MM-yyyy HH:mm')}"></td>
-          <td th:text="${ig.feedbackInDays + ' day(s)'}">Feedback in ? days</td>
+          <td>
+            <div th:text="${'I: ' + ig.firstFeedbackDays + ' day(s)'}"></div>
+            <div th:text="${'II: ' + ig.secondFeedbackDays + ' day(s)'}"></div>
+          </td>
           <td th:text="${ig.practitionerComment}"></td>
           <td>
-            <div th:if="${ig.feedbackGiven}">
-              <span class="badge bg-secondary">Rating</span>
-              <div th:text="${ig.feedbackRating + ' - ' + ratingDescription.get(ig.feedbackRating)}"></div>
+            <div th:if="${ig.firstFeedbackGiven}">
+              <div>
+                <span class="badge bg-secondary">Rating I</span>
+                <div th:text="${ig.firstFeedbackRating + ' - ' + ratingDescription.get(ig.firstFeedbackRating)}"></div>
+              </div>
+              <div>
+                <span class="badge bg-secondary">Comment I</span>
+                <div th:text="${ig.firstPatientComment}"></div>
+              </div>
             </div>
-            <div th:if="${ig.feedbackGiven}">
-              <span class="badge bg-secondary">Comment</span>
-              <div th:text="${ig.patientComment}"></div>
+            <div th:if="${ig.secondFeedbackGiven}">
+              <div>
+                <span class="badge bg-secondary">Rating II</span>
+                <div th:text="${ig.secondFeedbackRating + ' - ' + ratingDescription.get(ig.secondFeedbackRating)}"></div>
+              </div>
+              <div>
+                <span class="badge bg-secondary">Comment II</span>
+                <div th:text="${ig.secondPatientComment}"></div>
+              </div>
             </div>
           </td>
           <td>
-            <a th:if="${ig.feedbackGiven && !ig.feedbackOpened}" th:href="@{/practitioner/itp-acknowledged/{itpID}(itpID=${ig.id})}" class="btn btn-success">Acknowledge</a>
-            <button th:if="${ig.feedbackGiven && ig.feedbackOpened}" class="btn btn-info">Acknowledged</button>
+            <a th:if="${(ig.firstFeedbackGiven && !ig.firstFeedbackOpened)}" th:href="@{/practitioner/itp-acknowledged/{itpID}(itpID=${ig.id})}" class="btn btn-success">Acknowledge I</a>
+            <a th:if="${(ig.secondFeedbackGiven && !ig.secondFeedbackOpened)}" th:href="@{/practitioner/itp-acknowledged/{itpID}(itpID=${ig.id})}" class="btn btn-success">Acknowledge II</a>
+            <button th:if="${(ig.firstFeedbackGiven && ig.firstFeedbackOpened) || (ig.secondFeedbackGiven && ig.secondFeedbackOpened)}" class="btn btn-info">Acknowledged</button>
           </td>
         </tr>
         </tbody>

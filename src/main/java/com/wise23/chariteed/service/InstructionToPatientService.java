@@ -1,5 +1,7 @@
 package com.wise23.chariteed.service;
 
+import com.wise23.chariteed.controller.InstructionsToPatientForm;
+import com.wise23.chariteed.model.Instruction;
 import com.wise23.chariteed.model.InstructionToPatient;
 import com.wise23.chariteed.model.dto.PatientFeedbackData;
 import com.wise23.chariteed.repository.InstructionToPatientRepository;
@@ -14,25 +16,47 @@ public class InstructionToPatientService {
     @Autowired
     InstructionToPatientRepository instructionToPatientRepository;
 
-    public InstructionToPatient assignInstructionToPatíent(InstructionToPatient instructionToPatient) {
-        instructionToPatient.setGivenAt(LocalDateTime.now());
+    public void handleForm(InstructionsToPatientForm form) {
+        for (Instruction instruction : form.getInstructionSet()) {
+            InstructionToPatient itp = new InstructionToPatient();
+            itp.setPractitioner(form.getPractitioner());
+            itp.setPatient(form.getPatient());
+            itp.setInstruction(instruction);
+            itp.setGivenAt(LocalDateTime.now());
+            itp.setPractitionerComment(form.getPractitionerComment());
+            itp.setFirstFeedbackDays(form.getFirstFeedbackDays());
+            itp.setSecondFeedbackDays(form.getSecondFeedbackDays());
 
-        return instructionToPatientRepository.save(instructionToPatient);
+            instructionToPatientRepository.save(itp);
+        }
     }
 
     public InstructionToPatient getInstructionToPatientById(Long id) {
         return instructionToPatientRepository.getReferenceById(id);
     }
 
-    public InstructionToPatient updateInstruction(InstructionToPatient itp, PatientFeedbackData feedbackData) {
-        itp.setFeedbackGiven(true);
-        itp.setFeedbackRating(feedbackData.getFeedbackRating());
-        itp.setPatientComment(feedbackData.getPatientComment());
+    public InstructionToPatient updateInstructionFirstFeedback(InstructionToPatient itp, PatientFeedbackData feedbackData) {
+        itp.setFirstFeedbackGiven(true);
+        itp.setFirstFeedbackRating(feedbackData.getFeedbackRating());
+        itp.setFirstPatientComment(feedbackData.getPatientComment());
+        return instructionToPatientRepository.save(itp);
+    }
+
+    public InstructionToPatient updateInstructionSecondFeedback(InstructionToPatient itp, PatientFeedbackData feedbackData) {
+        itp.setSecondFeedbackGiven(true);
+        itp.setSecondFeedbackRating(feedbackData.getFeedbackRating());
+        itp.setSecondPatientComment(feedbackData.getPatientComment());
         return instructionToPatientRepository.save(itp);
     }
 
     public InstructionToPatient acknowledgeFeedback(InstructionToPatient itp) {
-        itp.setFeedbackOpened(true);
+
+        if (itp.getFirstFeedbackGiven()) {
+            itp.setFirstFeedbackOpened(true);
+        }
+        if (itp.getSecondFeedbackGiven()) {
+            itp.setSecondFeedbackOpened(true);
+        }
 
         return instructionToPatientRepository.save(itp);
     }

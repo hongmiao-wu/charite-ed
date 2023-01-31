@@ -12,12 +12,17 @@
 
 <div class="container-fluid">
 
-    <div th:if="${feedbackIsNeededMessage == null}" class="alert alert-warning alert-dismissible show" role="alert">
-        <strong>Feedback needed!</strong> Your time for feedback is over, please leave feedback anyway!
+    <div th:if="${ instructionsForFirstFeedback != null && !instructionsForFirstFeedback.isEmpty()}">
+        <div th:each="itp : ${instructionsForFirstFeedback}" th:if="${firstFeedbackIsNeededMessage != null}" class="alert alert-warning alert-dismissible show" role="alert">
+            <strong th:text="${firstFeedbackIsNeededMessage}">Feedback needed!</strong>
+            <div th:text="${'Instruction ' + itp.instruction.title + ' requires your feedback. Please, fill the form and send it.'}"></div>
+        </div>
     </div>
-
-    <div th:if="${feedbackIsNeededMessage != null}" class="alert alert-warning alert-dismissible show" role="alert">
-        <strong th:text="${feedbackIsNeededMessage}">Feedback needed!</strong> Your time for feedback is over, please leave feedback anyway!
+    <div th:if="${ instructionsForSecondFeedback != null && !instructionsForSecondFeedback.isEmpty()}">
+        <div th:each="itp : ${instructionsForSecondFeedback}" th:if="${secondFeedbackIsNeededMessage != null}" class="alert alert-warning alert-dismissible show" role="alert">
+            <strong th:text="${secondFeedbackIsNeededMessage}">Feedback needed!</strong>
+            <div th:text="${'Instruction ' + itp.instruction.title + ' requires your feedback. Please, fill the form and send it.'}"></div>
+        </div>
     </div>
 
     <div th:fragment="show-patient" id="patient-data" data-draggable="true" tabindex="-1" role="dialog">
@@ -46,47 +51,60 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>practitioner-example</td>
-                        <td>Example content</td>
-                        <td th:text="${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}"></td>
-                        <td><span class="badge bg-warning text-dark">Feedback required!</span> Need to be done within 3 days!</td>
-                        <td>No patient feedback</td>
-                    </tr>
                     <tr th:each="ig : ${patientData?.instructions}">
                         <td><a th:href="@{/practitioner/view/{fhirID}(fhirID=${ig.practitioner.fhirId})}" th:text="${ig.practitioner.fhirId}"></a></td>
                         <td><a th:href="@{/instruction/view/{id}(id=${ig.instruction.id})}" th:text="${ig.instruction.title}"></a></td>
                         <td th:text="${#temporals.format(ig.givenAt, 'dd-MM-yyyy HH:mm')}"></td>
                         <td>
-                            <span th:if="${instructionIDforFeedback != null
-                                    && ig.id == instructionIDforFeedback && !ig.feedbackGiven && ig.id == latestInstructionID}"
-                                  class="badge bg-warning text-dark">
-                                Feedback required!
-                            </span>
-                            <div th:text="${ig.feedbackInDays + ' day(s)'}"></div>
+                            <div>
+                                <span th:if="${itpForFirstFeedbackIds.contains(ig.id) && !ig.firstFeedbackGiven}"
+                                      class="badge bg-warning text-dark">Feedback required!</span>
+                                <div th:text="'I: ' + ${ig.firstFeedbackDays + ' day(s)'}"></div>
+                            </div>
+                            <div>
+                                <span th:if="${itpForSecondFeedbackIds.contains(ig.id) && !ig.secondFeedbackGiven}"
+                                      class="badge bg-warning text-dark">Feedback required!</span>
+                                <div th:text="'II: ' + ${ig.secondFeedbackDays + ' day(s)'}"></div>
+                            </div>
                         </td>
                         <td>
-                            <div th:if="${ig.feedbackGiven}">
-                                <span class="badge bg-secondary">Rating</span>
-                                <div th:text="${ig.feedbackRating + ' - ' + ratingDescription.get(ig.feedbackRating)}"></div>
+                            <div th:if="${ig.firstFeedbackGiven}">
+                                <div>
+                                    <span class="badge bg-secondary">Rating I</span>
+                                    <div th:text="${ig.firstFeedbackRating + ' - ' + ratingDescription.get(ig.firstFeedbackRating)}"></div>
+                                </div>
+                                <div>
+                                    <span class="badge bg-secondary">Comment I</span>
+                                    <div th:text="${ig.firstPatientComment}"></div>
+                                </div>
+                                <div th:if="${ig.firstFeedbackGiven && ig.firstFeedbackOpened}">
+                                    <button class="btn btn-info">Acknowledged</button>
+                                </div>
                             </div>
-                            <div th:if="${ig.feedbackGiven}">
-                                <span class="badge bg-secondary">Comment</span>
-                                <div th:text="${ig.patientComment}"></div>
+                            <div th:if="${ig.secondFeedbackGiven}">
+                                <div>
+                                    <span class="badge bg-secondary">Rating II</span>
+                                    <div th:text="${ig.secondFeedbackRating + ' - ' + ratingDescription.get(ig.secondFeedbackRating)}"></div>
+                                </div>
+                                <div>
+                                    <span class="badge bg-secondary">Comment II</span>
+                                    <div th:text="${ig.secondPatientComment}"></div>
+                                </div>
+                                <div th:if="${ig.secondFeedbackGiven && ig.secondFeedbackOpened}">
+                                    <button class="btn btn-info">Acknowledged</button>
+                                </div>
                             </div>
-                            <div th:if="${ig.feedbackGiven && ig.feedbackOpened}">
-                                <button class="btn btn-info">Acknowledged</button>
-                            </div>
 
 
 
-                            <div th:if="${!ig.feedbackGiven && ig.id == latestInstructionID}">
-                                <form th:action="@{/patient/patientComment}" th:object="${patientFeedbackData}" id="patientCommentForm" class="form-horizontal" method="post">
 
-                                    <input type="hidden" th:field="*{instructionToPatient}">
+                            <div th:if="${itpForFirstFeedbackIds.contains(ig.id) && !ig.firstFeedbackGiven}">
+                                <form th:action="@{/patient/patientComment/first}" th:object="${patientFeedbackData}" id="patientCommentForm" class="form-horizontal" method="post">
+
+                                    <input type="hidden" name="instructionToPatient" th:value="${ig.id}">
 
                                     <div class="form-group">
-                                        <label>Rating</label>
+                                        <label>Rating I</label>
                                         <div>
                                             <input class="form-check-input" type="radio" name="inlineRadioOptions" id="worst" th:field="*{feedbackRating}" th:value="${1}">
                                             <label class="form-check-label" for="worst">Significantly worse</label>
@@ -102,7 +120,41 @@
                                     </div>
                                     <div class="form-group">
                                         <div>
-                                            <label>Comment</label>
+                                            <label>Comment I</label>
+                                            <!--/* do not use th:field here, otherwise body can not be initialized (and is overriden by the th:field value) */-->
+                                            <textarea id="patientComment" class="form-control ckeditor" name="patientComment"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-2 col-sm-2">
+                                            <button type="submit" class="btn btn-primary">Send</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div th:if="${itpForSecondFeedbackIds.contains(ig.id) && !ig.secondFeedbackGiven}">
+                                <form th:action="@{/patient/patientComment/second}" th:object="${patientFeedbackData}" id="patientCommentForm" class="form-horizontal" method="post">
+
+                                    <input type="hidden" name="instructionToPatient" th:value="${ig.id}">
+
+                                    <div class="form-group">
+                                        <label>Rating II</label>
+                                        <div>
+                                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="worst" th:field="*{feedbackRating}" th:value="${1}">
+                                            <label class="form-check-label" for="worst">Significantly worse</label>
+                                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="worse" th:field="*{feedbackRating}" th:value="${2}">
+                                            <label class="form-check-label" for="worse">Slightly worse</label>
+                                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="neutral" th:field="*{feedbackRating}" th:value="${3}">
+                                            <label class="form-check-label" for="neutral">No changes</label>
+                                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="better" th:field="*{feedbackRating}" th:value="${4}">
+                                            <label class="form-check-label" for="better">Slightly better</label>
+                                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="best" th:field="*{feedbackRating}" th:value="${5}">
+                                            <label class="form-check-label" for="best">Significantly better</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div>
+                                            <label>Comment II</label>
                                             <!--/* do not use th:field here, otherwise body can not be initialized (and is overriden by the th:field value) */-->
                                             <textarea id="patientComment" class="form-control ckeditor" name="patientComment"></textarea>
                                         </div>

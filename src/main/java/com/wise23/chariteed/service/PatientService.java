@@ -6,6 +6,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Condition;
@@ -127,17 +128,28 @@ public class PatientService {
         return instructionToPatientRepository.findLatestInstructionOfPatient(patientFhirID).orElse(null);
     }
 
-    public Boolean timeForFeedback(InstructionToPatient instructionToPatient) {
+    public List<InstructionToPatient> getInstructionsOfPatientWithoutFeedback(Long patientFhirID) {
+        return  instructionToPatientRepository.findInstructionsOfPatientByFeedbackGivenIsFalseOrSecondFeedbackGivenIsFalse(patientFhirID);
+    }
+
+    public List<InstructionToPatient> filterByFeedbackDeadline(List<InstructionToPatient> instructions, int wave) {
+        return instructions.stream().filter(itp -> timeForFeedback(itp, wave)).collect(Collectors.toList());
+    }
+
+    public Boolean timeForFeedback(InstructionToPatient instructionToPatient, int wave) {
         if (instructionToPatient == null) {
             return false;
         }
 
         LocalDateTime instructionTime = instructionToPatient.getGivenAt();
         Long timePassed = ChronoUnit.DAYS.between(instructionTime, LocalDateTime.now());
-        if (timePassed >= instructionToPatient.getFeedbackInDays()) {
-            return true;
-        }
 
+        if (wave == 1) {
+            return timePassed >= instructionToPatient.getFirstFeedbackDays();
+        }
+        if (wave == 2) {
+            return timePassed >= instructionToPatient.getSecondFeedbackDays();
+        }
         return false;
     }
 
