@@ -1,11 +1,20 @@
 package com.wise23.chariteed.service;
 
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Patient;
+import com.wise23.chariteed.model.InstructionToPatient;
+import com.wise23.chariteed.model.PatientData;
+import com.wise23.chariteed.repository.InstructionToPatientRepository;
+import com.wise23.chariteed.repository.PatientDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.*;
@@ -18,10 +27,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PatientService {
-    public FhirContext fhirContext;
-    public IGenericClient client;
 
     @Autowired
+    PatientDataRepository patientDataRepository;
+
+    @Autowired
+    InstructionToPatientRepository instructionToPatientRepository;
+
+    public FhirContext fhirContext;
+
+    public IGenericClient client;
+
     public PatientService() {
         this.fhirContext = FhirConfig.getFhirContext();
         this.client = fhirContext.newRestfulGenericClient(GetPropertiesBean.getTestserverURL());
@@ -35,7 +51,7 @@ public class PatientService {
             patient = this.client.read().resource(Patient.class).withId(fhirID).execute();
         } catch (Exception e) {
             System.out.println("ERROR: Patient ID does not exist.");
-            return "/doctor/dashboard/error";
+            return "/practitioner/dashboard/error";
         }
 
         return this.fhirContext.newJsonParser().setPrettyPrint(true)
@@ -98,5 +114,52 @@ public class PatientService {
 
         // Concatenate the fields into a single string
         return given + "_" + family + "_" + year + "_" + random_id;
+    }
+
+    public List<PatientData> getAllPatients(){
+        return patientDataRepository.findAll();
+    }
+
+    public PatientData findByFhirId(Long fhirID) {
+        return patientDataRepository.findPatientDataByFhirId(fhirID).orElse(null);
+    }
+
+    public InstructionToPatient getLatestInstruction(Long patientFhirID) {
+        return instructionToPatientRepository.findLatestInstructionOfPatient(patientFhirID).orElse(null);
+    }
+
+    public List<InstructionToPatient> getInstructionsOfPatientWithoutFeedback(Long patientFhirID) {
+        return  instructionToPatientRepository.findInstructionsOfPatientByFeedbackGivenIsFalseOrSecondFeedbackGivenIsFalse(patientFhirID);
+    }
+
+    public List<InstructionToPatient> filterByFeedbackDeadline(List<InstructionToPatient> instructions, int wave) {
+        return instructions.stream().filter(itp -> timeForFeedback(itp, wave)).collect(Collectors.toList());
+    }
+
+    public Boolean timeForFeedback(InstructionToPatient instructionToPatient, int wave) {
+        if (instructionToPatient == null) {
+            return false;
+        }
+
+        LocalDateTime instructionTime = instructionToPatient.getGivenAt();
+        Long timePassed = ChronoUnit.DAYS.between(instructionTime, LocalDateTime.now());
+
+        if (wave == 1) {
+            return timePassed >= instructionToPatient.getFirstFeedbackDays();
+        }
+        if (wave == 2) {
+            return timePassed >= instructionToPatient.getSecondFeedbackDays();
+        }
+        return false;
+    }
+
+    public Map<Integer, String> getRatingDescription() {
+        Map<Integer, String> ratingDescription = new HashMap<>();
+        ratingDescription.put(1, "Significantly worse");
+        ratingDescription.put(2, "Slightly worse");
+        ratingDescription.put(3, "Neutral");
+        ratingDescription.put(4, "Slightly better");
+        ratingDescription.put(5, "Significantly better");
+        return ratingDescription;
     }
 }

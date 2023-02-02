@@ -18,19 +18,22 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user_data")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User implements UserDetails {
-    @SequenceGenerator(name = "users_sequence", sequenceName = "users_sequence", allocationSize = 1)
+public class UserData implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_sequence")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "patient_id", unique = true, nullable = false)
     private Long id;
 
-    private String patientID;
-    private String condition;
+    @Column(name = "fhir_id")
+    private String fhirID;
+
+    @Column(name = "condition_state")
+    private String conditionState;
 
     @Lob
     private Blob file;
@@ -49,12 +52,12 @@ public class User implements UserDetails {
     private String email;
 
     @NotNull(message = "Password cannot be empty")
-    @Length(min = 7, message = "Password should be atleast 7 characters long")
+    @Length(min = 7, message = "Password should be at least 7 characters long")
     @Column(name = "password")
     private String password;
 
     @Column(name = "mobile", unique = true)
-    @Length(min = 10, message = "Password should be atleast 10 number long")
+    @Length(min = 10, message = "Password should be at least 10 number long")
     private String mobile;
 
     @CreationTimestamp
@@ -74,7 +77,7 @@ public class User implements UserDetails {
     @Column(name = "enabled")
     private Boolean enabled = true;
 
-    public User(String firstName, String lastName, String email, String password, String mobile, Role role) {
+    public UserData(String firstName, String lastName, String email, String password, String mobile, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -84,17 +87,17 @@ public class User implements UserDetails {
     }
 
     // For creating a patient user
-    public User(String firstName, String lastName, String email, String password, String mobile, Role role,
-            String patientID, Blob file, String condition) {
+    public UserData(String firstName, String lastName, String email, String password, String mobile, Role role,
+                String fhirID, Blob file, String conditionState) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.mobile = mobile;
         this.role = role;
-        this.patientID = patientID;
+        this.fhirID = fhirID;
         this.file = file;
-        this.condition = condition;
+        this.conditionState = conditionState;
     }
 
     @Override
