@@ -31,7 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Controller
+// @Controller
+@RestController
 @RequestMapping("/patient")
 public class PatientController {
 
@@ -112,6 +113,26 @@ public class PatientController {
         model.addAttribute("ratingDescription", patientService.getRatingDescription());
 
         return "patient/dashboard";
+    }
+
+    @RequestMapping(value = { "/getInstructions" }, method = RequestMethod.GET)
+    public InstructionToPatient getInstructions(Model model, Principal principal) {
+        UserData patient = userDataService.getUserData(principal.getName());
+
+        PatientData patientData = patientService.findById(patient.getId());
+
+        InstructionToPatient instruction = patientData.getInstructions().iterator().next();
+
+        return instruction;
+    }
+
+    @RequestMapping(value = { "/getPatientData" }, method = RequestMethod.GET)
+    public UserData getPatientData(Model model, Principal principal) {
+        UserData patient = userDataService.getUserData(principal.getName());
+
+        patient.setFile(null);
+
+        return patient;
     }
 
     @GetMapping("/view/all")
