@@ -14,5 +14,7 @@ public interface PractitionerDataRepository extends JpaRepository<PractitionerDa
 
     Optional<PractitionerData> findPractitionerDataByFhirId(Long fhirId);
 
+    Optional<PractitionerData> findPractitionerDataById(Long Id);
+
     List<PractitionerData> findAll();
 }

@@ -5,6 +5,8 @@ import com.google.gson.JsonParser;
 import com.google.zxing.WriterException;
 import com.wise23.chariteed.constant.QRCodeGenerator;
 import com.wise23.chariteed.model.*;
+import com.wise23.chariteed.repository.PatientDataRepository;
+import com.wise23.chariteed.service.InstructionService;
 import com.wise23.chariteed.service.InstructionToPatientService;
 import com.wise23.chariteed.service.PatientService;
 import com.wise23.chariteed.service.PractitionerService;
@@ -42,8 +44,13 @@ public class PractitionerController {
     @Autowired
     UserDataService userDataService;
 
-    Logger logger = LoggerFactory.getLogger(PractitionerController.class);
+    @Autowired
+    InstructionService instructionService;
 
+    @Autowired
+    PatientDataRepository patientDataRepository;
+
+    Logger logger = LoggerFactory.getLogger(PractitionerController.class);
 
     @GetMapping("/view/all")
     public String showAllPractitioners(Model model) {
@@ -58,13 +65,13 @@ public class PractitionerController {
     public String showPractitioner(@PathVariable Long fhirID, Model model) {
 
         try {
-            Practitioner fhirPractitioner = practitionerService.client.read().resource(Practitioner.class).withId(fhirID).execute();
+            Practitioner fhirPractitioner = practitionerService.client.read().resource(Practitioner.class)
+                    .withId(fhirID).execute();
             PractitionerData practitionerData = practitionerService.findByFhirId(fhirID);
 
             model.addAttribute("fhirPractitioner", fhirPractitioner);
             model.addAttribute("practitionerData", practitionerData);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.debug(e.getMessage());
         }
 
@@ -76,7 +83,9 @@ public class PractitionerController {
     @RequestMapping(value = { "/dashboard" }, method = RequestMethod.GET)
     public String doctorHome(Principal principal, Model model) {
         UserData doctor = userDataService.getUserData(principal.getName());
+        List<Instruction> allInstructions = instructionService.getAllInstructions();
         model.addAttribute("doctor", doctor);
+        model.addAttribute("allInstructions", allInstructions);
         return "/practitioner/dashboard";
     }
 
@@ -106,7 +115,8 @@ public class PractitionerController {
 
         // User creation with lots of dummy data
         byte[] file_bytes = generator.getFile().getBytes();
-        UserData user = new UserData(name.get("given").getAsJsonArray().get(0).getAsString(), name.get("family").getAsString(),
+        UserData user = new UserData(name.get("given").getAsJsonArray().get(0).getAsString(),
+                name.get("family").getAsString(),
                 "test@mail.de", generator.getPassword(), "2222222222", Role.PATIENT, id,
                 new SerialBlob(file_bytes), patientCondition);
 
@@ -121,7 +131,7 @@ public class PractitionerController {
         userDataService.saveUserData(user);
         System.out.println("Patient " + user.getLastName() + " created\nPassword is: " + generator.getPassword());
 
-        return "/practitioner/dashboard/patientGenerated";
+        return "redirect:/practitioner/dashboard/patientGenerated";
     }
 
     @RequestMapping("/itp-acknowledged/{itpID}")
@@ -134,5 +144,67 @@ public class PractitionerController {
 
     }
 
+    @RequestMapping("/create")
+    public String generateInstructionToPatient(Model model) {
+
+        InstructionsToPatientForm form = new InstructionsToPatientForm();
+        model.addAttribute("instructionsToPatientForm", form);
+        model.addAttribute("allInstructions", instructionService.getAllInstructions());
+
+        return "/instructionToPatient/assign";
+    }
+
+    @RequestMapping("/assign")
+    public String assignInstructionToPatient(@ModelAttribute InstructionsToPatientForm form, Model model)
+            throws IOException, SerialException, SQLException, WriterException {
+
+        String id = Long.toString(form.getId());
+        model.addAttribute("patient", form);
+
+        String patientData = patientService.getPatientData(id);
+        String patientCondition = patientService.getCondition(id);
+
+        if (patientCondition == null) {
+            return "/practitioner/dashboard/error";
+        }
+
+        form.setPassword(patientService.generatePassword(patientData));
+
+        JsonObject name = JsonParser.parseString(patientData).getAsJsonObject().get("name").getAsJsonArray().get(0)
+                .getAsJsonObject();
+
+        // User creation with lots of dummy data
+        byte[] file_bytes = form.getFile().getBytes();
+        UserData user = new UserData(name.get("given").getAsJsonArray().get(0).getAsString(),
+                name.get("family").getAsString(),
+                "test@mail.de", form.getPassword(), "2222222222", Role.PATIENT, id,
+                new SerialBlob(file_bytes), patientCondition);
+
+        if (userDataService.userExists(user)) {
+            logger.error("ERROR: Patient Account already exists!");
+            return "/practitioner/dashboard/error";
+        }
+
+        // QR code generation
+        QRCodeGenerator.createQRImage(id);
+
+        userDataService.saveUserData(user);
+        System.out.println("Patient " + user.getLastName() + " created\nPassword is: " + form.getPassword());
+
+        PatientData patient = new PatientData();
+        patient.setFhirId(Long.valueOf(id));
+        patient.setId(user.getId());
+        patientDataRepository.save(patient);
+
+        System.out.println(user.getId() + " " + patient.getId());
+
+        form.setPatient(patient);
+        instructionToPatientService.handleForm(form);
+
+        return "/practitioner/dashboard/patientGenerated";
+
+        // return "redirect:/practitioner/view/" + form.getPractitioner().getFhirId();
+        // return "redirect:/practitioner/dashboard";
+    }
 
 }

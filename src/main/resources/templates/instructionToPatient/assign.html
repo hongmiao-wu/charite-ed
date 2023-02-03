@@ -15,29 +15,21 @@
 <body>
 <div class="container container-fluid">
     <h1 class="page-header">Assign instruction to a patient</h1>
-    <h3 th:text="${'Practitioner ' + instructionsToPatientForm.practitioner.fhirId}">Practitioner</h3>
 
     <div class="row">
         <div class="col-md-12">
-            <form th:action="@{/itp/assign}" th:object="${instructionsToPatientForm}" id="instructionToPatientForm" class="form-horizontal" method="post"
+            <form th:action="@{/practitioner/assign}" th:object="${instructionsToPatientForm}" id="instructionToPatientForm" class="form-horizontal" method="post"
                   accept-charset="utf-8" enctype="multipart/form-data">
                 <!--input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /-->
 
-                <input type="hidden" th:field="*{practitioner}">
+                <p>Id: <input type="text" th:field="*{id}" /></p>
+                <p>File to upload (.pdf only): <input type="file" th:field="*{file}" /></p>
 
                 <div class="col-md-3">
                     <div class="input-group select2-bootstrap-append">
                         <label for="instruction">Instructions</label>
                         <select id="instruction" multiple class="form-control" th:field="*{instructionSet}">
                             <option th:each="instr : ${allInstructions}" th:value="${instr.id}" th:text="${instr.title}"></option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="patient">Patients</label>
-                        <select id="patient" th:field="*{patient}" style="width:100%;">
-                            <option th:each="p : ${allPatients}" th:value="${p.id}" th:text="${p.fhirId}"></option>
                         </select>
                     </div>
                 </div>

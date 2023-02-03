@@ -3,7 +3,6 @@ package com.wise23.chariteed.controller;
 import com.wise23.chariteed.model.Instruction;
 import com.wise23.chariteed.service.InstructionService;
 import lombok.extern.slf4j.Slf4j;
-import org.hl7.fhir.r4.model.Bundle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +18,6 @@ public class InstructionController {
 
     @Autowired
     InstructionService instructionService;
-
 
     @RequestMapping("/view/{id}")
     public String viewInstruction(@PathVariable Long id, Model model) {
@@ -43,7 +41,7 @@ public class InstructionController {
         Instruction savedInstruction = instructionService.saveInstruction(username, instruction);
 
         model.addAttribute("instruction", savedInstruction);
-        return "redirect:/instruction/view/" + savedInstruction.getId().toString();
+        return "redirect:/practitioner/dashboard";
     }
 
     @GetMapping("/view/all")
@@ -76,6 +74,5 @@ public class InstructionController {
 
         return "instruction/createInstruction";
     }
-
 
 }

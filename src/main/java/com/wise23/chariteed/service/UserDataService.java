@@ -18,7 +18,6 @@ public class UserDataService implements UserDetailsService {
     @Autowired
     UserDataRepository userDataRepository;
 
-
     public UserData saveUserData(UserData user) {
         String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
@@ -34,10 +33,9 @@ public class UserDataService implements UserDetailsService {
         return userDataRepository.getUserDataByEmail(email);
     }
 
-    public UserData deleteByFullNameAndMobile(String firstName, String lastName, String mobile) {
-        return userDataRepository.deleteByFullNameAndMobile(firstName, lastName, mobile);
+    public void deleteByFullNameAndMobile(String firstName, String lastName, String mobile) {
+        userDataRepository.deleteByFullNameAndMobile(firstName, lastName, mobile);
     }
-
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

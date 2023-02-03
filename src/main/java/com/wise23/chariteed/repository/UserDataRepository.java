@@ -25,6 +25,6 @@ public interface UserDataRepository extends JpaRepository<UserData, Long> {
     @Modifying
     @Transactional
     @Query("DELETE FROM UserData u WHERE u.firstName = :firstName AND u.lastName = :lastName AND u.mobile = :mobile")
-    UserData deleteByFullNameAndMobile(@Param("firstName") String firstName, @Param("lastName") String lastName,
+    void deleteByFullNameAndMobile(@Param("firstName") String firstName, @Param("lastName") String lastName,
             @Param("mobile") String mobile);
 }

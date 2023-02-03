@@ -15,7 +15,7 @@ import java.util.Set;
 public class PractitionerData {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    // @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "practitioner_id", unique = true, nullable = false)
     Long id;
 

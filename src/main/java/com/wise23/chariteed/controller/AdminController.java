@@ -1,8 +1,11 @@
 package com.wise23.chariteed.controller;
 
 import com.wise23.chariteed.model.Role;
+import com.wise23.chariteed.model.InstructionToPatient;
+import com.wise23.chariteed.model.PatientData;
 import com.wise23.chariteed.model.PractitionerGenerator;
 import com.wise23.chariteed.model.UserData;
+import com.wise23.chariteed.repository.PatientDataRepository;
 import com.wise23.chariteed.repository.UserDataRepository;
 import com.wise23.chariteed.service.PractitionerService;
 import com.wise23.chariteed.service.PatientService;
@@ -17,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +30,10 @@ import org.slf4j.LoggerFactory;
 @Controller
 public class AdminController {
 
-    PatientService patientService = new PatientService();
-
     Logger logger = LoggerFactory.getLogger(AdminController.class);
+
+    @Autowired
+    PatientService patientService;
 
     @Autowired
     UserDataService userDataService;
@@ -35,14 +41,50 @@ public class AdminController {
     @Autowired
     UserDataRepository userDataRepository;
 
+    @Autowired
+    PractitionerService practitionerService;
+
+    @Autowired
+    PatientDataRepository patientDataRepository;
+
     @RequestMapping(value = { "/admin/dashboard" }, method = RequestMethod.GET)
     public String adminHome(Model model) {
 
         List<UserData> practitioners = userDataRepository.findByRole(Role.PRACTITIONER);
         List<UserData> patients = userDataRepository.findByRole(Role.PATIENT);
 
+        // for (int i = 0; i < practitioners.size(); i++) {
+        // System.out.println("ID: " + practitioners.get(i).getId());
+
+        // PractitionerData bla =
+        // practitionerService.findById(practitioners.get(i).getId());
+
+        // if (bla != null) {
+        // System.out.println("WUH: " + bla.getFhirId());
+        // }
+        // }
+
+        List<Set<InstructionToPatient>> instructionList = new ArrayList<Set<InstructionToPatient>>();
+
+        for (int i = 0; i < patients.size(); i++) {
+            UserData patient = patients.get(i);
+            System.out.println(patient.getFirstName() + " " + patient.getId());
+            PatientData patientData = patientService.findById(patient.getId());
+
+            // model.addAttribute("instructions", patientData.getInstructions());
+
+            instructionList.add(patientData.getInstructions());
+
+            for (InstructionToPatient instruction : patientData.getInstructions()) {
+                System.out.println("INSTRUCTION: " + instruction.getInstruction().getTitle());
+                System.out.println("Comment: " + instruction.getPractitionerComment());
+            }
+        }
+
         model.addAttribute("practitioners", practitioners);
         model.addAttribute("patients", patients);
+        model.addAttribute("ratingDescription", patientService.getRatingDescription());
+        model.addAttribute("instructionsList", instructionList);
 
         return "/admin/dashboard";
     }
@@ -60,7 +102,8 @@ public class AdminController {
 
         generator.setPassword(passwd);
 
-        UserData UserData = new UserData(generator.getFirstName(), generator.getLastName(), generator.getEmail(), passwd,
+        UserData UserData = new UserData(generator.getFirstName(), generator.getLastName(), generator.getEmail(),
+                passwd,
                 generator.getPhoneNumber(), Role.PRACTITIONER);
 
         if (userDataRepository.existsByEmailAndMobile(UserData.getEmail(), UserData.getMobile())) {

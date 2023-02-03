@@ -10,7 +10,9 @@
 </head>
 <body>
 
-<div class="container-fluid">
+    <h1>Welcome to Patient Dashboard</h1>
+    
+    <div class="container-fluid">
 
     <div th:if="${ instructionsForFirstFeedback != null && !instructionsForFirstFeedback.isEmpty()}">
         <div th:each="itp : ${instructionsForFirstFeedback}" th:if="${firstFeedbackIsNeededMessage != null}" class="alert alert-warning alert-dismissible show" role="alert">
@@ -27,23 +29,15 @@
 
     <div th:fragment="show-patient" id="patient-data" data-draggable="true" tabindex="-1" role="dialog">
 
-            <div th:if="${fhirPatient == null}" >
-                <h1>Patient Name</h1>
-                <div>Patient Birthdate</div>
-                <div>Patient address</div>
-            </div>
-
-
             <div th:if="${fhirPatient != null}" >
-                <h1 th:text="${fhirPatient.getName().get(0).given + ' ' + fhirPatient.getName().get(0).family}">Patient Name</h1>
-                <div th:text="${#dates.format(fhirPatient.birthDate, 'dd-MM-yyyy HH:mm')}">Patient Birthdate</div>
-                <div th:text="${fhirPatient.address.get(0).city + ' ' + fhirPatient.address.get(0).postalCode}">Patient address</div>
+                <h1 th:text="${fhirPatient.getFirstName() + ' ' + fhirPatient.getLastName()}">Patient Name</h1>
+                <!-- <div th:text="${#dates.format(fhirPatient.birthDate, 'dd-MM-yyyy HH:mm')}">Patient Birthdate</div> -->
+                <!-- <div th:text="${fhirPatient.address.get(0).city + ' ' + fhirPatient.address.get(0).postalCode}">Patient address</div> -->
             </div>
 
             <table class="table table-striped table-responsive-md">
                 <thead>
                     <tr>
-                        <th>Practitioner</th>
                         <th>Instruction</th>
                         <th>Given at</th>
                         <th>Feedback in</th>
@@ -52,7 +46,6 @@
                 </thead>
                 <tbody>
                     <tr th:each="ig : ${patientData?.instructions}">
-                        <td><a th:href="@{/practitioner/view/{fhirID}(fhirID=${ig.practitioner.fhirId})}" th:text="${ig.practitioner.fhirId}"></a></td>
                         <td><a th:href="@{/instruction/view/{id}(id=${ig.instruction.id})}" th:text="${ig.instruction.title}"></a></td>
                         <td th:text="${#temporals.format(ig.givenAt, 'dd-MM-yyyy HH:mm')}"></td>
                         <td>
@@ -173,9 +166,9 @@
             </table>
 
         <div>
-            <a th:href="@{/instruction/view/all}" class="btn btn-info">View all instructions</a>
-            <a th:href="@{/patient/view/all}" class="btn btn-info">View all patients</a>
-            <a th:href="@{/practitioner/view/all}" class="btn btn-info">View all practitioners</a>
+            <a th:href="@{/patient/eNumbers}" class="btn btn-info">Emergency Numbers</a>
+            <a th:href="@{/patient/download}" class="btn btn-info">Download doctor's letter</a>
+            <a th:href="@{/logout}" class="btn btn-info">Logout</a>
         </div>
 
     </div>

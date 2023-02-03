@@ -19,15 +19,17 @@ public class StartupService {
         UserData admin = new UserData("root", "root", "admin@example.com", "password", "9991234567", Role.ADMIN);
         userDataService.saveUserData(admin);
     }
-    @EventListener(ApplicationReadyEvent.class)
-    public void createPatient() {
-        UserData patient = new UserData("patient", "patient", "patient@example.com", "password", "9991234568", Role.PATIENT);
-        userDataService.saveUserData(patient);
-    }
+    // @EventListener(ApplicationReadyEvent.class)
+    // public void createPatient() {
+    // UserData patient = new UserData("patient", "patient", "patient@example.com",
+    // "password", "9991234568", Role.PATIENT);
+    // userDataService.saveUserData(patient);
+    // }
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void createPractitioner() {
-        UserData practitioner = new UserData("practitioner", "practitioner", "practitioner@example.com", "password", "9991234569", Role.PRACTITIONER);
-        userDataService.saveUserData(practitioner);
-    }
+    // @EventListener(ApplicationReadyEvent.class)
+    // public void createPractitioner() {
+    // UserData practitioner = new UserData("practitioner", "practitioner",
+    // "practitioner@example.com", "password", "9991234569", Role.PRACTITIONER);
+    // userDataService.saveUserData(practitioner);
+    // }
 }

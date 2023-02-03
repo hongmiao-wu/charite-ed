@@ -19,7 +19,6 @@ public class InstructionToPatientService {
     public void handleForm(InstructionsToPatientForm form) {
         for (Instruction instruction : form.getInstructionSet()) {
             InstructionToPatient itp = new InstructionToPatient();
-            itp.setPractitioner(form.getPractitioner());
             itp.setPatient(form.getPatient());
             itp.setInstruction(instruction);
             itp.setGivenAt(LocalDateTime.now());
@@ -35,14 +34,16 @@ public class InstructionToPatientService {
         return instructionToPatientRepository.getReferenceById(id);
     }
 
-    public InstructionToPatient updateInstructionFirstFeedback(InstructionToPatient itp, PatientFeedbackData feedbackData) {
+    public InstructionToPatient updateInstructionFirstFeedback(InstructionToPatient itp,
+            PatientFeedbackData feedbackData) {
         itp.setFirstFeedbackGiven(true);
         itp.setFirstFeedbackRating(feedbackData.getFeedbackRating());
         itp.setFirstPatientComment(feedbackData.getPatientComment());
         return instructionToPatientRepository.save(itp);
     }
 
-    public InstructionToPatient updateInstructionSecondFeedback(InstructionToPatient itp, PatientFeedbackData feedbackData) {
+    public InstructionToPatient updateInstructionSecondFeedback(InstructionToPatient itp,
+            PatientFeedbackData feedbackData) {
         itp.setSecondFeedbackGiven(true);
         itp.setSecondFeedbackRating(feedbackData.getFeedbackRating());
         itp.setSecondPatientComment(feedbackData.getPatientComment());

@@ -12,5 +12,7 @@ public interface PatientDataRepository extends JpaRepository<PatientData, Long> 
 
     Optional<PatientData> findPatientDataByFhirId(Long fhirId);
 
+    Optional<PatientData> findPatientDataById(Long Id);
+
     List<PatientData> findAll();
 }

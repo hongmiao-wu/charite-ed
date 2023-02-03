@@ -12,7 +12,6 @@
 
   <div sec:authorize="hasRole('ROLE_ANONYMOUS')">
     <p><a th:href="@{|/login|}" th:text="'Log in'"></a></p>
-    <p><a th:href="@{|/register|}" th:text="'Register'"></a></p>
   </div>
 
   <div sec:authorize="isAuthenticated()">
