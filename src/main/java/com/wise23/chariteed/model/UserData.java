@@ -26,7 +26,7 @@ import java.util.Collections;
 public class UserData implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "patient_id", unique = true, nullable = false)
+    @Column(name = "user_id", unique = true, nullable = false)
     private Long id;
 
     @Column(name = "fhir_id")
