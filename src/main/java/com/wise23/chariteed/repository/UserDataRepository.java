@@ -20,6 +20,8 @@ public interface UserDataRepository extends JpaRepository<UserData, Long> {
 
     boolean existsByEmailAndMobile(String email, String Mobile);
 
+    boolean existsByFirstNameAndLastNameAndMobile(String firstName, String lastName, String mobile);
+
     List<UserData> findByRole(Role role);
 
     @Modifying

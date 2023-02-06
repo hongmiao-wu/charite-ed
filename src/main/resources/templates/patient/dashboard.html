@@ -15,17 +15,21 @@
     <div class="container-fluid">
 
     <div th:if="${ instructionsForFirstFeedback != null && !instructionsForFirstFeedback.isEmpty()}">
-        <div th:each="itp : ${instructionsForFirstFeedback}" th:if="${firstFeedbackIsNeededMessage != null}" class="alert alert-warning alert-dismissible show" role="alert">
-            <strong th:text="${firstFeedbackIsNeededMessage}">Feedback needed!</strong>
-            <div th:text="${'Instruction ' + itp.instruction.title + ' requires your feedback. Please, fill the form and send it.'}"></div>
+        <div th:each="itp : ${instructionsForFirstFeedback}">
+            <div th:if="${itp.getFirstFeedbackRating() == null}">
+                <div class="alert alert-warning alert-dismissible show" role="alert">
+                    <strong th:text="${firstFeedbackIsNeededMessage}">Feedback needed!</strong>
+                    <div th:text="${'Instruction ' + itp.instruction.title + ' requires your feedback. Please, fill the form and send it.'}"></div>
+                </div>
+            </div>
         </div>
     </div>
-    <div th:if="${ instructionsForSecondFeedback != null && !instructionsForSecondFeedback.isEmpty()}">
+    <!-- <div th:if="${ instructionsForSecondFeedback != null && !instructionsForSecondFeedback.isEmpty()}">
         <div th:each="itp : ${instructionsForSecondFeedback}" th:if="${secondFeedbackIsNeededMessage != null}" class="alert alert-warning alert-dismissible show" role="alert">
             <strong th:text="${secondFeedbackIsNeededMessage}">Feedback needed!</strong>
             <div th:text="${'Instruction ' + itp.instruction.title + ' requires your feedback. Please, fill the form and send it.'}"></div>
         </div>
-    </div>
+    </div> -->
 
     <div th:fragment="show-patient" id="patient-data" data-draggable="true" tabindex="-1" role="dialog">
 
@@ -52,29 +56,29 @@
                             <div>
                                 <span th:if="${itpForFirstFeedbackIds.contains(ig.id) && !ig.firstFeedbackGiven}"
                                       class="badge bg-warning text-dark">Feedback required!</span>
-                                <div th:text="'I: ' + ${ig.firstFeedbackDays + ' day(s)'}"></div>
+                                <div th:text="${ig.firstFeedbackDays + ' day(s)'}"></div>
                             </div>
-                            <div>
+                            <!-- <div>
                                 <span th:if="${itpForSecondFeedbackIds.contains(ig.id) && !ig.secondFeedbackGiven}"
                                       class="badge bg-warning text-dark">Feedback required!</span>
                                 <div th:text="'II: ' + ${ig.secondFeedbackDays + ' day(s)'}"></div>
-                            </div>
+                            </div> -->
                         </td>
                         <td>
                             <div th:if="${ig.firstFeedbackGiven}">
                                 <div>
-                                    <span class="badge bg-secondary">Rating I</span>
+                                    <span class="badge bg-secondary">Rating</span>
                                     <div th:text="${ig.firstFeedbackRating + ' - ' + ratingDescription.get(ig.firstFeedbackRating)}"></div>
                                 </div>
                                 <div>
-                                    <span class="badge bg-secondary">Comment I</span>
+                                    <span class="badge bg-secondary">Comment</span>
                                     <div th:text="${ig.firstPatientComment}"></div>
                                 </div>
                                 <div th:if="${ig.firstFeedbackGiven && ig.firstFeedbackOpened}">
-                                    <button class="btn btn-info">Acknowledged</button>
+                                    <button class="btn btn-info">Acknowledged from admin</button>
                                 </div>
                             </div>
-                            <div th:if="${ig.secondFeedbackGiven}">
+                            <!-- <div th:if="${ig.secondFeedbackGiven}">
                                 <div>
                                     <span class="badge bg-secondary">Rating II</span>
                                     <div th:text="${ig.secondFeedbackRating + ' - ' + ratingDescription.get(ig.secondFeedbackRating)}"></div>
@@ -84,20 +88,16 @@
                                     <div th:text="${ig.secondPatientComment}"></div>
                                 </div>
                                 <div th:if="${ig.secondFeedbackGiven && ig.secondFeedbackOpened}">
-                                    <button class="btn btn-info">Acknowledged</button>
+                                    <button class="btn btn-info">Acknowledged from admin</button>
                                 </div>
-                            </div>
-
-
-
-
+                            </div> -->
                             <div th:if="${itpForFirstFeedbackIds.contains(ig.id) && !ig.firstFeedbackGiven}">
                                 <form th:action="@{/patient/patientComment/first}" th:object="${patientFeedbackData}" id="patientCommentForm" class="form-horizontal" method="post">
 
                                     <input type="hidden" name="instructionToPatient" th:value="${ig.id}">
 
                                     <div class="form-group">
-                                        <label>Rating I</label>
+                                        <label>Rating</label>
                                         <div>
                                             <input class="form-check-input" type="radio" name="inlineRadioOptions" id="worst" th:field="*{feedbackRating}" th:value="${1}">
                                             <label class="form-check-label" for="worst">Significantly worse</label>
@@ -113,7 +113,7 @@
                                     </div>
                                     <div class="form-group">
                                         <div>
-                                            <label>Comment I</label>
+                                            <label>Comment</label>
                                             <!--/* do not use th:field here, otherwise body can not be initialized (and is overriden by the th:field value) */-->
                                             <textarea id="patientComment" class="form-control ckeditor" name="patientComment"></textarea>
                                         </div>
@@ -125,7 +125,7 @@
                                     </div>
                                 </form>
                             </div>
-                            <div th:if="${itpForSecondFeedbackIds.contains(ig.id) && !ig.secondFeedbackGiven}">
+                            <!-- <div th:if="${itpForSecondFeedbackIds.contains(ig.id) && !ig.secondFeedbackGiven}">
                                 <form th:action="@{/patient/patientComment/second}" th:object="${patientFeedbackData}" id="patientCommentForm" class="form-horizontal" method="post">
 
                                     <input type="hidden" name="instructionToPatient" th:value="${ig.id}">
@@ -148,7 +148,7 @@
                                     <div class="form-group">
                                         <div>
                                             <label>Comment II</label>
-                                            <!--/* do not use th:field here, otherwise body can not be initialized (and is overriden by the th:field value) */-->
+                                             /* do not use th:field here, otherwise body can not be initialized (and is overriden by the th:field value) */ 
                                             <textarea id="patientComment" class="form-control ckeditor" name="patientComment"></textarea>
                                         </div>
                                     </div>
@@ -158,7 +158,7 @@
                                         </div>
                                     </div>
                                 </form>
-                            </div>
+                            </div> -->
                         </td>
 
                     </tr>

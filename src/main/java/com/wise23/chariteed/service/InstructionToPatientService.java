@@ -23,8 +23,20 @@ public class InstructionToPatientService {
             itp.setInstruction(instruction);
             itp.setGivenAt(LocalDateTime.now());
             itp.setPractitionerComment(form.getPractitionerComment());
-            itp.setFirstFeedbackDays(form.getFirstFeedbackDays());
-            itp.setSecondFeedbackDays(form.getSecondFeedbackDays());
+
+            if (form.getFirstFeedbackDays() == null) {
+                // Should probably be 7 days in the future
+                itp.setFirstFeedbackDays(0);
+            } else {
+                itp.setFirstFeedbackDays(form.getFirstFeedbackDays());
+            }
+
+            // if (form.getSecondFeedbackDays() == null) {
+            // // Should probably be 7 days in the future
+            // itp.setSecondFeedbackDays(0);
+            // } else {
+            // itp.setSecondFeedbackDays(form.getSecondFeedbackDays());
+            // }
 
             instructionToPatientRepository.save(itp);
         }

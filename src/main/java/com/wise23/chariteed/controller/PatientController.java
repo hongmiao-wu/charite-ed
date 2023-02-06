@@ -47,8 +47,9 @@ public class PatientController {
     @Autowired
     InstructionToPatientService instructionToPatientService;
 
-    String firstFeedbackMessage = "Your instruction requires the first feedback, please leave your feedback";
-    String secondFeedbackMessage = "Your instruction requires the second feedback, please leave your feedback";
+    String firstFeedbackMessage = "Your instruction requires feedback, please leave your feedback";
+    // String secondFeedbackMessage = "Your instruction requires the second
+    // feedback, please leave your feedback";
 
     @RequestMapping(value = "/eNumbers", method = RequestMethod.GET)
     public String eNumbers() {
@@ -99,12 +100,19 @@ public class PatientController {
                 firstFeedbackInstructions.stream().map(InstructionToPatient::getId).collect(Collectors.toList()));
         model.addAttribute("firstFeedbackIsNeededMessage", firstFeedbackMessage);
 
-        List<InstructionToPatient> secondFeedbackInstructions = patientService
-                .filterByFeedbackDeadline(instructionsWithoutFeedback, 2);
-        model.addAttribute("instructionsForSecondFeedback", secondFeedbackInstructions);
-        model.addAttribute("itpForSecondFeedbackIds",
-                secondFeedbackInstructions.stream().map(InstructionToPatient::getId).collect(Collectors.toList()));
-        model.addAttribute("secondFeedbackIsNeededMessage", secondFeedbackMessage);
+        // for (InstructionToPatient instruction : firstFeedbackInstructions) {
+        // if (instruction.getFirstFeedbackRating() == null) {
+        // model.addAttribute("firstFeedbackIsNeededMessage", firstFeedbackMessage);
+        // }
+        // }
+
+        // List<InstructionToPatient> secondFeedbackInstructions = patientService
+        // .filterByFeedbackDeadline(instructionsWithoutFeedback, 2);
+        // model.addAttribute("instructionsForSecondFeedback",
+        // secondFeedbackInstructions);
+        // model.addAttribute("itpForSecondFeedbackIds",
+        // secondFeedbackInstructions.stream().map(InstructionToPatient::getId).collect(Collectors.toList()));
+        // model.addAttribute("secondFeedbackIsNeededMessage", secondFeedbackMessage);
 
         PatientFeedbackData patientFeedbackData = new PatientFeedbackData();
         model.addAttribute("patientFeedbackData", patientFeedbackData);

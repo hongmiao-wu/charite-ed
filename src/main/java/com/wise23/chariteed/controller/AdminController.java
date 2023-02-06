@@ -8,12 +8,14 @@ import com.wise23.chariteed.model.UserData;
 import com.wise23.chariteed.repository.PatientDataRepository;
 import com.wise23.chariteed.repository.UserDataRepository;
 import com.wise23.chariteed.service.PractitionerService;
+import com.wise23.chariteed.service.InstructionToPatientService;
 import com.wise23.chariteed.service.PatientService;
 
 import com.wise23.chariteed.service.UserDataService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,38 +49,21 @@ public class AdminController {
     @Autowired
     PatientDataRepository patientDataRepository;
 
+    @Autowired
+    InstructionToPatientService instructionToPatientService;
+
     @RequestMapping(value = { "/admin/dashboard" }, method = RequestMethod.GET)
     public String adminHome(Model model) {
 
         List<UserData> practitioners = userDataRepository.findByRole(Role.PRACTITIONER);
         List<UserData> patients = userDataRepository.findByRole(Role.PATIENT);
 
-        // for (int i = 0; i < practitioners.size(); i++) {
-        // System.out.println("ID: " + practitioners.get(i).getId());
-
-        // PractitionerData bla =
-        // practitionerService.findById(practitioners.get(i).getId());
-
-        // if (bla != null) {
-        // System.out.println("WUH: " + bla.getFhirId());
-        // }
-        // }
-
         List<Set<InstructionToPatient>> instructionList = new ArrayList<Set<InstructionToPatient>>();
 
         for (int i = 0; i < patients.size(); i++) {
             UserData patient = patients.get(i);
-            System.out.println(patient.getFirstName() + " " + patient.getId());
             PatientData patientData = patientService.findById(patient.getId());
-
-            // model.addAttribute("instructions", patientData.getInstructions());
-
             instructionList.add(patientData.getInstructions());
-
-            for (InstructionToPatient instruction : patientData.getInstructions()) {
-                System.out.println("INSTRUCTION: " + instruction.getInstruction().getTitle());
-                System.out.println("Comment: " + instruction.getPractitionerComment());
-            }
         }
 
         model.addAttribute("practitioners", practitioners);
@@ -131,5 +116,15 @@ public class AdminController {
             @RequestParam("mobile") String mobile) {
         userDataService.deleteByFullNameAndMobile(firstName, lastName, mobile);
         return "redirect:/admin/dashboard";
+    }
+
+    @RequestMapping("admin/itp-acknowledged/{itpID}")
+    public String acknowledgeFeedback(@PathVariable Long itpID) {
+
+        InstructionToPatient dbITP = instructionToPatientService.getInstructionToPatientById(itpID);
+        instructionToPatientService.acknowledgeFeedback(dbITP);
+
+        return "redirect:/admin/dashboard";
+
     }
 }

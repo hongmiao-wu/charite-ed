@@ -44,6 +44,7 @@ public class UserDataService implements UserDetailsService {
     }
 
     public boolean userExists(UserData user) {
-        return userDataRepository.existsByEmailAndMobile(user.getEmail(), user.getMobile());
+        return userDataRepository.existsByFirstNameAndLastNameAndMobile(user.getFirstName(), user.getLastName(),
+                user.getMobile());
     }
 }

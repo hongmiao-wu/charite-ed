@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Random;
 
 @Slf4j
 @Controller
@@ -95,55 +96,6 @@ public class PractitionerController {
         return "/practitioner/dashboard/generatePatient";
     }
 
-    @PostMapping("/dashboard/generatePatient")
-    public String generatePatientSubmit(@ModelAttribute PatientGenerator generator, Model model)
-            throws WriterException, IOException, SerialException, SQLException {
-        String id = Long.toString(generator.getId());
-        model.addAttribute("patient", generator);
-
-        String patientData = patientService.getPatientData(id);
-        String patientCondition = patientService.getCondition(id);
-
-        if (patientCondition == null) {
-            return "/practitioner/dashboard/error";
-        }
-
-        generator.setPassword(patientService.generatePassword(patientData));
-
-        JsonObject name = JsonParser.parseString(patientData).getAsJsonObject().get("name").getAsJsonArray().get(0)
-                .getAsJsonObject();
-
-        // User creation with lots of dummy data
-        byte[] file_bytes = generator.getFile().getBytes();
-        UserData user = new UserData(name.get("given").getAsJsonArray().get(0).getAsString(),
-                name.get("family").getAsString(),
-                "test@mail.de", generator.getPassword(), "2222222222", Role.PATIENT, id,
-                new SerialBlob(file_bytes), patientCondition);
-
-        if (userDataService.userExists(user)) {
-            logger.error("ERROR: Patient Account already exists!");
-            return "/practitioner/dashboard/error";
-        }
-
-        // QR code generation
-        QRCodeGenerator.createQRImage(id);
-
-        userDataService.saveUserData(user);
-        System.out.println("Patient " + user.getLastName() + " created\nPassword is: " + generator.getPassword());
-
-        return "redirect:/practitioner/dashboard/patientGenerated";
-    }
-
-    @RequestMapping("/itp-acknowledged/{itpID}")
-    public String acknowledgeFeedback(@PathVariable Long itpID) {
-
-        InstructionToPatient dbITP = instructionToPatientService.getInstructionToPatientById(itpID);
-        instructionToPatientService.acknowledgeFeedback(dbITP);
-
-        return "redirect:/practitioner/view/" + dbITP.getPractitioner().getFhirId();
-
-    }
-
     @RequestMapping("/create")
     public String generateInstructionToPatient(Model model) {
 
@@ -174,10 +126,13 @@ public class PractitionerController {
                 .getAsJsonObject();
 
         // User creation with lots of dummy data
+        Random rand = new Random();
+        int phoneNumber = 1000000000 + rand.nextInt(900000000);
         byte[] file_bytes = form.getFile().getBytes();
         UserData user = new UserData(name.get("given").getAsJsonArray().get(0).getAsString(),
                 name.get("family").getAsString(),
-                "test@mail.de", form.getPassword(), "2222222222", Role.PATIENT, id,
+                name.get("family").getAsString() + "@mail.de", form.getPassword(), Integer.toString(phoneNumber),
+                Role.PATIENT, id,
                 new SerialBlob(file_bytes), patientCondition);
 
         if (userDataService.userExists(user)) {
@@ -202,9 +157,6 @@ public class PractitionerController {
         instructionToPatientService.handleForm(form);
 
         return "/practitioner/dashboard/patientGenerated";
-
-        // return "redirect:/practitioner/view/" + form.getPractitioner().getFhirId();
-        // return "redirect:/practitioner/dashboard";
     }
 
 }

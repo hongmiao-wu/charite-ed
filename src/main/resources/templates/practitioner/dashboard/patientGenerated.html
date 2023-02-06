@@ -13,7 +13,7 @@
     <p th:text="'ID: ' + ${patient.id}" />
     <p th:text="'Password: ' + ${patient.password}" />
     <div>
-        <a th:href="@{/practitioner/dashboard/generatePatient}" class="btn btn-primary">Add another patient</a>
+        <a th:href="@{/practitioner/create}" class="btn btn-primary">Add another patient</a>
         <a th:href="@{/practitioner/dashboard}" class="btn btn-primary">Home</a>
         <a th:href="@{/logout}" class="btn btn-info">Log out</a>
     </div>

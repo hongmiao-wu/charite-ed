@@ -158,37 +158,41 @@
               <th>When</th>
               <th>Practitioner Comment</th>
               <th>Patient feedback</th>
-
               <th>Acknowledged</th>
             </tr>
           </thead>
-          <!-- <tbody>
-            <tr th:each="patient, iter : ${patients}">
-              <td th:text="${patient.getFirstName()} + ' ' + ${patient.getLastName()}"></td>
-              <td th:text="${instructions[iter.index].getInstruction().getTitle()}"></td>
-              <td th:text="${instructions[iter.index].getGivenAt()}"></td>
-              <td th:text="${instructions[iter.index].getPractitionerComment()}"></td>
-              <td th:text="${ratingDescription.get(instructions[iter.index].getFirstFeedbackRating())} + ': ' +${instructions[iter.index].getFirstPatientComment()}"></td>
-              <td th:with="index = ${iter.index + 1}"></td>
-            </tr>
-          </tbody> -->
           <tbody>
             <tr th:each="patient, iter : ${patients}">
               <td th:text="${patient.getFirstName()} + ' ' + ${patient.getLastName()}"></td>
-              <td th:each="instruction : ${instructionsList[iter.index]}">
-                <span th:text="${instruction.getInstruction().getTitle()}"></span>
+              <td>
+                <span th:each="instruction : ${instructionsList[iter.index]}">
+                  <a th:href="@{/instruction/view/{id}(id=${instruction.getInstruction().getId()})}" th:text="${instruction.getInstruction().getTitle()}"></a>
+                  <br th:if="!${instruction_has_next}" />
+                </span>
               </td>
-              <td th:each="instruction : ${instructionsList[iter.index]}">
-                <span th:text="${instruction.getGivenAt()}"></span>
+              <td th:text="${instructionsList[iter.index][0].getGivenAt()}"></td>
+              <td th:text="${instructionsList[iter.index][0].getPractitionerComment()}"></td>
+              <td>
+                <span th:each="instruction : ${instructionsList[iter.index]}">
+                  <span th:text="${ratingDescription.get(instruction.getFirstFeedbackRating())} + ': ' +${instruction.getFirstPatientComment()}"></span>
+                  <br th:if="!${instruction_has_next}" />
+                </span>
               </td>
-              <td th:each="instruction : ${instructionsList[iter.index]}">
-                <span th:text="${instruction.getPractitionerComment()}"></span>
-              </td>
-              <td th:each="instruction : ${instructionsList[iter.index]}">
-                <span th:text="${ratingDescription.get(instruction.getFirstFeedbackRating())} + ': ' +${instruction.getFirstPatientComment()}"></span>
+              <td>
+                <span th:each="instruction : ${instructionsList[iter.index]}">
+                  <a th:if="${(instruction.getFirstFeedbackGiven() && !instruction.getFirstFeedbackOpened())}"
+                    th:href="@{/admin/itp-acknowledged/{itpID}(itpID=${instruction.getId()})}" class="btn btn-success">Acknowledge [[${instruction.getInstruction().getTitle()}]]
+                  </a>
+                  <!-- <a th:if="${(instruction.getSecondFeedbackGiven() && !instruction.getSecondFeedbackOpened())}"
+                    th:href="@{/admin/itp-acknowledged/{itpID}(itpID=${instruction.getId()})}" class="btn btn-success">Acknowledge II</a> -->
+                  <button
+                    th:if="${(instruction.getFirstFeedbackGiven() && instruction.getFirstFeedbackOpened()) || (instruction.getSecondFeedbackGiven() && instruction.getSecondFeedbackOpened())}"
+                    class="btn btn-info">Acknowledged [[${instruction.getInstruction().getTitle()}]]</button>
+                </span>
               </td>
             </tr>
           </tbody>
+          </table>
         </table>
           <!-- <tbody>
             <tr th:if="${practitionerData?.givenInstructions == null || practitionerData?.givenInstructions.isEmpty()}">
