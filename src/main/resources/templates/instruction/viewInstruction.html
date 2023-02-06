@@ -57,7 +57,8 @@
 
   <div th:if="${instruction != null}" class="row">
     <div class="col-md-12">
-      <a th:href="@{/instruction/view/all}" class="btn btn-primary">View all</a>
+      <a th:href="@{/practitioner/dashboard}" class="btn btn-primary">View all</a>
+      <!-- <a th:href="@{/instruction/view/all}" class="btn btn-primary">View all</a> -->
       <a th:href="@{/instruction/delete/{id}(id=${instruction.id})}" class="btn btn-danger">Delete</a>
     </div>
   </div>

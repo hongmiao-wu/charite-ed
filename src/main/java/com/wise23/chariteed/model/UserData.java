@@ -26,7 +26,7 @@ import java.util.Collections;
 public class UserData implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "patient_id", unique = true, nullable = false)
+    @Column(name = "user_id", unique = true, nullable = false)
     private Long id;
 
     @Column(name = "fhir_id")
@@ -88,7 +88,7 @@ public class UserData implements UserDetails {
 
     // For creating a patient user
     public UserData(String firstName, String lastName, String email, String password, String mobile, Role role,
-                String fhirID, Blob file, String conditionState) {
+            String fhirID, Blob file, String conditionState) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
