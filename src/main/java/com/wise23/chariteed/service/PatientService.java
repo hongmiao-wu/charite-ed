@@ -116,7 +116,7 @@ public class PatientService {
         return given + "_" + family + "_" + year + "_" + random_id;
     }
 
-    public List<PatientData> getAllPatients(){
+    public List<PatientData> getAllPatients() {
         return patientDataRepository.findAll();
     }
 
@@ -129,7 +129,8 @@ public class PatientService {
     }
 
     public List<InstructionToPatient> getInstructionsOfPatientWithoutFeedback(Long patientFhirID) {
-        return  instructionToPatientRepository.findInstructionsOfPatientByFeedbackGivenIsFalseOrSecondFeedbackGivenIsFalse(patientFhirID);
+        return instructionToPatientRepository
+                .findInstructionsOfPatientByFeedbackGivenIsFalseOrSecondFeedbackGivenIsFalse(patientFhirID);
     }
 
     public List<InstructionToPatient> filterByFeedbackDeadline(List<InstructionToPatient> instructions, int wave) {
@@ -161,5 +162,9 @@ public class PatientService {
         ratingDescription.put(4, "Slightly better");
         ratingDescription.put(5, "Significantly better");
         return ratingDescription;
+    }
+
+    public PatientData findById(Long ID) {
+        return patientDataRepository.findById(ID).orElse(null);
     }
 }

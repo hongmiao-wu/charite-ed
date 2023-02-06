@@ -25,16 +25,12 @@ import java.io.InputStream;
 import java.security.Principal;
 import java.sql.Blob;
 import java.sql.SQLException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import org.hl7.fhir.r4.model.Patient;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
-@Slf4j
 @Controller
 @RequestMapping("/patient")
 public class PatientController {
@@ -51,17 +47,9 @@ public class PatientController {
     @Autowired
     InstructionToPatientService instructionToPatientService;
 
-    String firstFeedbackMessage = "Your instruction requires the first feedback, please leave your feedback";
-    String secondFeedbackMessage = "Your instruction requires the second feedback, please leave your feedback";
-
-
-
-    @RequestMapping(method = RequestMethod.GET)
-    public String homePage(Principal principal, Model model) {
-        UserData patient = userDataService.getUserData(principal.getName());
-        model.addAttribute("patient", patient);
-        return "patient/dashboard";
-    }
+    String firstFeedbackMessage = "Your instruction requires feedback, please leave your feedback";
+    // String secondFeedbackMessage = "Your instruction requires the second
+    // feedback, please leave your feedback";
 
     @RequestMapping(value = "/eNumbers", method = RequestMethod.GET)
     public String eNumbers() {
@@ -91,58 +79,45 @@ public class PatientController {
         return new InputStreamResource(inputStream);
     }
 
-    @GetMapping("/admin/patient/{id}")
-    @ResponseBody
-    public String getPatientById(@PathVariable("id") String id) {
-        Patient patient = patientService.client.read().resource(Patient.class).withId(id).execute();
-        return patientService.fhirContext.newJsonParser().setPrettyPrint(true).encodeResourceToString(patient);
-    }
+    @GetMapping("/dashboard")
+    public String showPatientById(Model model, Principal principal) {
 
-    @GetMapping("/view/{patientFhirID}")
-    public String showPatientById(@PathVariable Long patientFhirID, Model model) {
+        UserData patient = userDataService.getUserData(principal.getName());
+        Long patientFhirID = Long.valueOf(patient.getFhirID()).longValue();
 
-        try {
-            Patient fhirPatient = patientService.client.read().resource(Patient.class).withId(patientFhirID).execute();
-            PatientData patientData = patientService.findByFhirId(patientFhirID);
+        PatientData patientData = patientService.findById(patient.getId());
 
-            model.addAttribute("fhirPatient", fhirPatient);
-            model.addAttribute("patientData", patientData);
-        }
-        catch (Exception e) {
-            log.debug(e.getMessage());
-        }
+        model.addAttribute("patientData", patientData);
+        model.addAttribute("fhirPatient", patient);
 
+        List<InstructionToPatient> instructionsWithoutFeedback = patientService
+                .getInstructionsOfPatientWithoutFeedback(patientFhirID);
 
-        /*InstructionToPatient latestInstruction = patientService.getLatestInstruction(patientFhirID);
-        if (latestInstruction != null) {
-            model.addAttribute("latestInstructionID", latestInstruction.getId());
-        }*/
-
-        List<InstructionToPatient> instructionsWithoutFeedback = patientService.getInstructionsOfPatientWithoutFeedback(patientFhirID);
-
-        List<InstructionToPatient> firstFeedbackInstructions = patientService.filterByFeedbackDeadline(instructionsWithoutFeedback, 1);
+        List<InstructionToPatient> firstFeedbackInstructions = patientService
+                .filterByFeedbackDeadline(instructionsWithoutFeedback, 1);
         model.addAttribute("instructionsForFirstFeedback", firstFeedbackInstructions);
-        model.addAttribute("itpForFirstFeedbackIds", firstFeedbackInstructions.stream().map(InstructionToPatient::getId).collect(Collectors.toList()));
+        model.addAttribute("itpForFirstFeedbackIds",
+                firstFeedbackInstructions.stream().map(InstructionToPatient::getId).collect(Collectors.toList()));
         model.addAttribute("firstFeedbackIsNeededMessage", firstFeedbackMessage);
 
-        List<InstructionToPatient> secondFeedbackInstructions = patientService.filterByFeedbackDeadline(instructionsWithoutFeedback, 2);
-        model.addAttribute("instructionsForSecondFeedback", secondFeedbackInstructions);
-        model.addAttribute("itpForSecondFeedbackIds", secondFeedbackInstructions.stream().map(InstructionToPatient::getId).collect(Collectors.toList()));
-        model.addAttribute("secondFeedbackIsNeededMessage", secondFeedbackMessage);
+        // for (InstructionToPatient instruction : firstFeedbackInstructions) {
+        // if (instruction.getFirstFeedbackRating() == null) {
+        // model.addAttribute("firstFeedbackIsNeededMessage", firstFeedbackMessage);
+        // }
+        // }
+
+        // List<InstructionToPatient> secondFeedbackInstructions = patientService
+        // .filterByFeedbackDeadline(instructionsWithoutFeedback, 2);
+        // model.addAttribute("instructionsForSecondFeedback",
+        // secondFeedbackInstructions);
+        // model.addAttribute("itpForSecondFeedbackIds",
+        // secondFeedbackInstructions.stream().map(InstructionToPatient::getId).collect(Collectors.toList()));
+        // model.addAttribute("secondFeedbackIsNeededMessage", secondFeedbackMessage);
 
         PatientFeedbackData patientFeedbackData = new PatientFeedbackData();
         model.addAttribute("patientFeedbackData", patientFeedbackData);
 
-        /*if (latestInstruction != null && !latestInstruction.getFeedbackGiven()) {
-
-            patientFeedbackData.setInstructionToPatient(latestInstruction);
-            patientFeedbackData.setFeedbackRating(latestInstruction.getFeedbackRating());
-            patientFeedbackData.setPatientComment(latestInstruction.getPatientComment());
-
-        }*/
-
         model.addAttribute("ratingDescription", patientService.getRatingDescription());
-
 
         return "patient/dashboard";
     }
@@ -160,10 +135,10 @@ public class PatientController {
 
         Long itpID = feedbackData.getInstructionToPatient().getId();
         InstructionToPatient dbITP = instructionToPatientService.getInstructionToPatientById(itpID);
-        InstructionToPatient updatedITP = instructionToPatientService.updateInstructionFirstFeedback(dbITP, feedbackData);
+        InstructionToPatient updatedITP = instructionToPatientService.updateInstructionFirstFeedback(dbITP,
+                feedbackData);
 
-        return "redirect:/patient/view/" + dbITP.getPatient().getFhirId();
-
+        return "redirect:/patient/dashboard";
     }
 
     @PostMapping("/patientComment/second")
@@ -171,11 +146,10 @@ public class PatientController {
 
         Long itpID = feedbackData.getInstructionToPatient().getId();
         InstructionToPatient dbITP = instructionToPatientService.getInstructionToPatientById(itpID);
-        InstructionToPatient updatedITP = instructionToPatientService.updateInstructionSecondFeedback(dbITP, feedbackData);
+        InstructionToPatient updatedITP = instructionToPatientService.updateInstructionSecondFeedback(dbITP,
+                feedbackData);
 
-        return "redirect:/patient/view/" + dbITP.getPatient().getFhirId();
-
+        return "redirect:/patient/dashboard";
     }
-
 
 }

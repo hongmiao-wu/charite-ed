@@ -1,6 +1,5 @@
 package com.wise23.chariteed.model;
 
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +13,7 @@ import java.util.Set;
 public class PatientData {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    // @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "patient_id", unique = true, nullable = false)
     Long id;
 
@@ -24,7 +23,6 @@ public class PatientData {
 
     @Column(name = "fhir_id", unique = true)
     Long fhirId;
-
 
     @OneToMany(mappedBy = "patient")
     Set<InstructionToPatient> instructions;

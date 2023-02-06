@@ -27,9 +27,12 @@ public class PractitionerService {
         this.client = fhirContext.newRestfulGenericClient(GetPropertiesBean.getTestserverURL());
     }
 
-
     public PractitionerData findByFhirId(Long fhirID) {
         return practitionerDataRepository.findPractitionerDataByFhirId(fhirID).orElse(null);
+    }
+
+    public PractitionerData findById(Long ID) {
+        return practitionerDataRepository.findPractitionerDataById(ID).orElse(null);
     }
 
     public List<PractitionerData> getAllPractitioners() {

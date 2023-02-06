@@ -10,20 +10,24 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name ="instruction_to_patient")
+@Table(name = "instruction_to_patient")
 public class InstructionToPatient {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "instruction_to_patient_id", unique = true, nullable = false)
     private Long id;
 
-
-    /*@ManyToMany
-    @JoinTable(name = "instruction_to_patient_has_instructions",
-            joinColumns = {@JoinColumn(name = "instruction_to_patient_id", referencedColumnName = "instruction_to_patient_id")},
-            inverseJoinColumns = {@JoinColumn(name = "instruction_id", referencedColumnName = "instruction_id")}
-    )
-    Set<Instruction> instructionSet = new HashSet<>();*/
+    /*
+     * @ManyToMany
+     * 
+     * @JoinTable(name = "instruction_to_patient_has_instructions",
+     * joinColumns = {@JoinColumn(name = "instruction_to_patient_id",
+     * referencedColumnName = "instruction_to_patient_id")},
+     * inverseJoinColumns = {@JoinColumn(name = "instruction_id",
+     * referencedColumnName = "instruction_id")}
+     * )
+     * Set<Instruction> instructionSet = new HashSet<>();
+     */
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "instruction_id")
@@ -37,7 +41,6 @@ public class InstructionToPatient {
     @JoinColumn(name = "patient_id")
     PatientData patient;
 
-
     @Column(name = "given_at", updatable = false)
     LocalDateTime givenAt;
 
@@ -48,7 +51,7 @@ public class InstructionToPatient {
     Integer firstFeedbackDays;
 
     @Column(name = "first_feedback_rating")
-    Integer firstFeedbackRating;
+    Integer firstFeedbackRating = null;
 
     @Column(name = "first_patient_comment")
     String firstPatientComment;
