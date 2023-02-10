@@ -17,18 +17,6 @@ public class InstructionToPatient {
     @Column(name = "instruction_to_patient_id", unique = true, nullable = false)
     private Long id;
 
-    /*
-     * @ManyToMany
-     * 
-     * @JoinTable(name = "instruction_to_patient_has_instructions",
-     * joinColumns = {@JoinColumn(name = "instruction_to_patient_id",
-     * referencedColumnName = "instruction_to_patient_id")},
-     * inverseJoinColumns = {@JoinColumn(name = "instruction_id",
-     * referencedColumnName = "instruction_id")}
-     * )
-     * Set<Instruction> instructionSet = new HashSet<>();
-     */
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "instruction_id")
     Instruction instruction;
@@ -76,5 +64,4 @@ public class InstructionToPatient {
 
     @Column(name = "second_feedback_opened")
     Boolean secondFeedbackOpened = false;
-
 }

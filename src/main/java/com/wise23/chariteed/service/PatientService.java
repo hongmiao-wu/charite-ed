@@ -3,6 +3,7 @@ package com.wise23.chariteed.service;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -10,9 +11,12 @@ import java.util.stream.Collectors;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Patient;
 import com.wise23.chariteed.model.InstructionToPatient;
 import com.wise23.chariteed.model.PatientData;
+import com.wise23.chariteed.model.DateAndConditions;
+import com.wise23.chariteed.model.Encounters;
 import com.wise23.chariteed.repository.InstructionToPatientRepository;
 import com.wise23.chariteed.repository.PatientDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,11 +62,11 @@ public class PatientService {
                 .encodeResourceToString(patient);
     }
 
-    public String getCondition(String fhirID) {
+    public List<DateAndConditions> getEncounter(String fhirID) {
         Bundle bundle = this.client
                 .search()
-                .forResource(Condition.class)
-                .where(Condition.PATIENT.hasId(
+                .forResource(Encounter.class)
+                .where(Encounter.PATIENT.hasId(
                         fhirID))
                 .returnBundle(Bundle.class)
                 .execute();
@@ -74,14 +78,60 @@ public class PatientService {
             return null;
         }
 
+        List<DateAndConditions> dateAndConditions = new ArrayList<>();
+
         for (Bundle.BundleEntryComponent entry : entries) {
-            if (entry.getResource().fhirType().equals("Condition")) {
-                Condition condition = (Condition) entry.getResource();
-                return condition.getCode().getCoding().get(0).getDisplay();
+            if (entry.getResource().fhirType().equals("Encounter")) {
+                Encounter encounter = (Encounter) entry.getResource();
+                dateAndConditions.add(new DateAndConditions(encounter.getPeriod().getEnd(),
+                        getConditions(encounter.getIdElement().getIdPart())));
             }
         }
 
-        return null;
+        for (DateAndConditions dateAndStrings : dateAndConditions) {
+            System.out.println("DATE: " + dateAndStrings.getDate());
+            System.out.println("CONDITIONS: " + dateAndStrings.getConditions());
+        }
+
+        return dateAndConditions;
+    }
+
+    private List<String> getConditions(String fhirID) {
+        Bundle bundle = this.client
+                .search()
+                .forResource(Condition.class)
+                .where(Condition.ENCOUNTER.hasId(fhirID))
+                .returnBundle(Bundle.class)
+                .execute();
+
+        List<Bundle.BundleEntryComponent> entries = bundle.getEntry();
+
+        if (entries.size() == 0) {
+            System.out.println("ERROR: No condition available.");
+            return null;
+        }
+
+        List<String> conditions = new ArrayList<>();
+
+        for (Bundle.BundleEntryComponent entry : entries) {
+            if (entry.getResource().fhirType().equals("Condition")) {
+                Condition condition = (Condition) entry.getResource();
+                conditions.add(condition.getCode().getCoding().get(0).getDisplay());
+            }
+        }
+
+        return conditions;
+    }
+
+    public Encounters getDateAndConditionsData(List<DateAndConditions> dateAndConditions,
+            List<InstructionToPatient> instructions, PatientData patient) {
+        Encounters dateAndConditionsData = new Encounters();
+        dateAndConditionsData.setDate(dateAndConditions.get(0).getDate());
+        dateAndConditionsData.setConditions(dateAndConditions.get(0).getConditions());
+        dateAndConditionsData.setInstructions(instructions);
+        dateAndConditionsData.setPatient(patient);
+
+        return dateAndConditionsData;
     }
 
     public String generatePassword(String patientData) {

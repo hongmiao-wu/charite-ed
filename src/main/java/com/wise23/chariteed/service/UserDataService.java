@@ -27,11 +27,6 @@ public class UserDataService implements UserDetailsService {
         return userDataRepository.save(user);
     }
 
-    public UserData getUserDataByEmail(String email) throws UsernameNotFoundException {
-        return userDataRepository.findByFirstName(email)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("USER_NOT_FOUND", email)));
-    }
-
     public UserData getUserData(String email) {
         return userDataRepository.getUserDataByEmail(email);
     }
@@ -46,9 +41,8 @@ public class UserDataService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("USER_NOT_FOUND", email)));
     }
 
-    public boolean userExists(UserData user) {
-        return userDataRepository.existsByFirstNameAndLastNameAndMobile(user.getFirstName(), user.getLastName(),
-                user.getMobile());
+    public UserData userExists(String firstName, String lastName, String email) {
+        return userDataRepository.findByFirstNameAndLastNameAndEmail(firstName, lastName, email);
     }
 
     public UserData findById(Long id) {

@@ -32,9 +32,6 @@ public class UserData implements UserDetails {
     @Column(name = "fhir_id")
     private String fhirID;
 
-    @Column(name = "condition_state")
-    private String conditionState;
-
     @Lob
     private Blob file;
 
@@ -88,7 +85,7 @@ public class UserData implements UserDetails {
 
     // For creating a patient user
     public UserData(String firstName, String lastName, String email, String password, String mobile, Role role,
-            String fhirID, Blob file, String conditionState) {
+            String fhirID, Blob file) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -97,7 +94,6 @@ public class UserData implements UserDetails {
         this.role = role;
         this.fhirID = fhirID;
         this.file = file;
-        this.conditionState = conditionState;
     }
 
     @Override

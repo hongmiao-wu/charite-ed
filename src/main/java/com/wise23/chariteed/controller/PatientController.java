@@ -1,9 +1,11 @@
 package com.wise23.chariteed.controller;
 
+import com.wise23.chariteed.model.Encounters;
 import com.wise23.chariteed.model.InstructionToPatient;
 import com.wise23.chariteed.model.PatientData;
 import com.wise23.chariteed.model.UserData;
 import com.wise23.chariteed.model.dto.PatientFeedbackData;
+import com.wise23.chariteed.repository.EncounterRepository;
 import com.wise23.chariteed.service.InstructionToPatientService;
 import com.wise23.chariteed.service.PatientService;
 
@@ -47,6 +49,9 @@ public class PatientController {
     @Autowired
     InstructionToPatientService instructionToPatientService;
 
+    @Autowired
+    EncounterRepository encounterRepository;
+
     String firstFeedbackMessage = "Your instruction requires feedback, please leave your feedback";
     // String secondFeedbackMessage = "Your instruction requires the second
     // feedback, please leave your feedback";
@@ -82,42 +87,29 @@ public class PatientController {
     @GetMapping("/dashboard")
     public String showPatientById(Model model, Principal principal) {
 
-        UserData patient = userDataService.getUserData(principal.getName());
-        Long patientFhirID = Long.valueOf(patient.getFhirID()).longValue();
+        UserData patientUser = userDataService.getUserData(principal.getName());
+        Long patientFhirID = Long.valueOf(patientUser.getFhirID()).longValue();
 
-        PatientData patientData = patientService.findById(patient.getId());
+        PatientData patient = patientService.findById(patientUser.getId());
 
-        model.addAttribute("patientData", patientData);
-        model.addAttribute("fhirPatient", patient);
+        List<Encounters> encounters = encounterRepository.findByPatient(patient);
 
         List<InstructionToPatient> instructionsWithoutFeedback = patientService
                 .getInstructionsOfPatientWithoutFeedback(patientFhirID);
 
         List<InstructionToPatient> firstFeedbackInstructions = patientService
                 .filterByFeedbackDeadline(instructionsWithoutFeedback, 1);
-        model.addAttribute("instructionsForFirstFeedback", firstFeedbackInstructions);
+
+        PatientFeedbackData patientFeedbackData = new PatientFeedbackData();
+
+        model.addAttribute("patientFeedbackData", patientFeedbackData);
+        model.addAttribute("ratingDescription", patientService.getRatingDescription());
+        model.addAttribute("encounters", encounters);
+        model.addAttribute("patientData", patient);
+        model.addAttribute("fhirPatient", patientUser);
         model.addAttribute("itpForFirstFeedbackIds",
                 firstFeedbackInstructions.stream().map(InstructionToPatient::getId).collect(Collectors.toList()));
         model.addAttribute("firstFeedbackIsNeededMessage", firstFeedbackMessage);
-
-        // for (InstructionToPatient instruction : firstFeedbackInstructions) {
-        // if (instruction.getFirstFeedbackRating() == null) {
-        // model.addAttribute("firstFeedbackIsNeededMessage", firstFeedbackMessage);
-        // }
-        // }
-
-        // List<InstructionToPatient> secondFeedbackInstructions = patientService
-        // .filterByFeedbackDeadline(instructionsWithoutFeedback, 2);
-        // model.addAttribute("instructionsForSecondFeedback",
-        // secondFeedbackInstructions);
-        // model.addAttribute("itpForSecondFeedbackIds",
-        // secondFeedbackInstructions.stream().map(InstructionToPatient::getId).collect(Collectors.toList()));
-        // model.addAttribute("secondFeedbackIsNeededMessage", secondFeedbackMessage);
-
-        PatientFeedbackData patientFeedbackData = new PatientFeedbackData();
-        model.addAttribute("patientFeedbackData", patientFeedbackData);
-
-        model.addAttribute("ratingDescription", patientService.getRatingDescription());
 
         return "patient/dashboard";
     }
