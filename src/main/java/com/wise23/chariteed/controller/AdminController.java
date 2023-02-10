@@ -1,10 +1,12 @@
 package com.wise23.chariteed.controller;
 
 import com.wise23.chariteed.model.Role;
+import com.wise23.chariteed.model.Encounters;
 import com.wise23.chariteed.model.InstructionToPatient;
 import com.wise23.chariteed.model.PatientData;
 import com.wise23.chariteed.model.PractitionerGenerator;
 import com.wise23.chariteed.model.UserData;
+import com.wise23.chariteed.repository.EncounterRepository;
 import com.wise23.chariteed.repository.PatientDataRepository;
 import com.wise23.chariteed.repository.UserDataRepository;
 import com.wise23.chariteed.service.PractitionerService;
@@ -14,6 +16,7 @@ import com.wise23.chariteed.service.PatientService;
 import com.wise23.chariteed.service.UserDataService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,9 +25,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,24 +54,17 @@ public class AdminController {
     @Autowired
     InstructionToPatientService instructionToPatientService;
 
+    @Autowired
+    EncounterRepository encounterRepository;
+
     @RequestMapping(value = { "/admin/dashboard" }, method = RequestMethod.GET)
     public String adminHome(Model model) {
 
         List<UserData> practitioners = userDataRepository.findByRole(Role.PRACTITIONER);
         List<UserData> patients = userDataRepository.findByRole(Role.PATIENT);
 
-        List<Set<InstructionToPatient>> instructionList = new ArrayList<Set<InstructionToPatient>>();
-
-        for (int i = 0; i < patients.size(); i++) {
-            UserData patient = patients.get(i);
-            PatientData patientData = patientService.findById(patient.getId());
-            instructionList.add(patientData.getInstructions());
-        }
-
         model.addAttribute("practitioners", practitioners);
         model.addAttribute("patients", patients);
-        model.addAttribute("ratingDescription", patientService.getRatingDescription());
-        model.addAttribute("instructionsList", instructionList);
 
         return "/admin/dashboard";
     }
@@ -113,9 +108,23 @@ public class AdminController {
     @PostMapping("/admin/deleteUserData")
     public String deleteUserData(@RequestParam("firstName") String firstName,
             @RequestParam("lastName") String lastName,
-            @RequestParam("mobile") String mobile) {
+            @RequestParam("mobile") String mobile,
+            @RequestParam("patientID") Long patientID) {
+        System.out.println(patientID);
         userDataService.deleteByFullNameAndMobile(firstName, lastName, mobile);
         return "redirect:/admin/dashboard";
+    }
+
+    @GetMapping("/admin/showPatient")
+    public String showUser(@RequestParam("patientID") Long patientID, Model model) {
+        PatientData patient = patientService.findById(patientID);
+        Optional<UserData> userData = userDataRepository.findById(patient.getId());
+        List<Encounters> encounters = encounterRepository.findByPatient(patient);
+
+        model.addAttribute("patient", userData);
+        model.addAttribute("encounters", encounters);
+        model.addAttribute("ratingDescription", patientService.getRatingDescription());
+        return "/admin/showPatient";
     }
 
     @RequestMapping("admin/itp-acknowledged/{itpID}")

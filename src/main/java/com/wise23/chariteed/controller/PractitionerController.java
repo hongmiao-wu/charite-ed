@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import com.google.zxing.WriterException;
 import com.wise23.chariteed.constant.QRCodeGenerator;
 import com.wise23.chariteed.model.*;
+import com.wise23.chariteed.repository.EncounterRepository;
 import com.wise23.chariteed.repository.PatientDataRepository;
 import com.wise23.chariteed.service.InstructionService;
 import com.wise23.chariteed.service.InstructionToPatientService;
@@ -50,6 +51,9 @@ public class PractitionerController {
 
     @Autowired
     PatientDataRepository patientDataRepository;
+
+    @Autowired
+    EncounterRepository encounterRepository;
 
     Logger logger = LoggerFactory.getLogger(PractitionerController.class);
 
@@ -114,49 +118,70 @@ public class PractitionerController {
         model.addAttribute("patient", form);
 
         String patientData = patientService.getPatientData(id);
-        String patientCondition = patientService.getCondition(id);
+        List<DateAndConditions> dateAndConditions = patientService.getEncounter(id);
 
-        if (patientCondition == null) {
+        if (dateAndConditions.isEmpty()) {
             return "/practitioner/dashboard/error";
         }
-
-        form.setPassword(patientService.generatePassword(patientData));
 
         JsonObject name = JsonParser.parseString(patientData).getAsJsonObject().get("name").getAsJsonArray().get(0)
                 .getAsJsonObject();
 
-        // User creation with lots of dummy data
-        Random rand = new Random();
-        int phoneNumber = 1000000000 + rand.nextInt(900000000);
-        byte[] file_bytes = form.getFile().getBytes();
-        UserData user = new UserData(name.get("given").getAsJsonArray().get(0).getAsString(),
-                name.get("family").getAsString(),
-                name.get("family").getAsString() + "@mail.de", form.getPassword(), Integer.toString(phoneNumber),
-                Role.PATIENT, id,
-                new SerialBlob(file_bytes), patientCondition);
+        String mail = name.get("family").getAsString() + "@mail.de";
+        String firstName = name.get("given").getAsJsonArray().get(0).getAsString();
+        String lastName = name.get("family").getAsString();
 
-        if (userDataService.userExists(user)) {
-            logger.error("ERROR: Patient Account already exists!");
-            return "/practitioner/dashboard/error";
+        UserData patientUser = userDataService.userExists(firstName, lastName, mail);
+
+        if (patientUser != null) {
+            // If patient alreasy exist
+            PatientData patient = patientService.findById(patientUser.getId());
+
+            if (patient.getDateAndConditions().size() == dateAndConditions.size()) {
+                // Nothing to update
+                return "redirect:/practitioner/dashboard";
+            }
+
+            form.setPatient(patient);
+            List<InstructionToPatient> listOfInstructions = instructionToPatientService.handleForm(form);
+
+            Encounters dateAndConditionsData = patientService.getDateAndConditionsData(dateAndConditions,
+                    listOfInstructions, patient);
+            encounterRepository.save(dateAndConditionsData);
+
+            return "redirect:/practitioner/dashboard";
+        } else {
+            // If patient does not already exist
+            // User creation with lots of dummy data
+            Random rand = new Random();
+            int phoneNumber = 1000000000 + rand.nextInt(900000000);
+            byte[] file_bytes = form.getFile().getBytes();
+            form.setPassword(patientService.generatePassword(patientData));
+
+            patientUser = new UserData(firstName, lastName, mail, form.getPassword(), Integer.toString(phoneNumber),
+                    Role.PATIENT, id, new SerialBlob(file_bytes));
+
+            // QR code generation
+            QRCodeGenerator.createQRImage(id);
+
+            userDataService.saveUserData(patientUser);
+            System.out.println("Patient " + patientUser.getLastName() + " created\nPassword is: " + form.getPassword());
+
+            PatientData patient = new PatientData();
+            patient.setFhirId(Long.valueOf(id));
+            patient.setId(patientUser.getId());
+            patientDataRepository.save(patient);
+
+            System.out.println(patientUser.getId() + " " + patient.getId());
+
+            // ID to connect the instruction with the conditions
+            form.setPatient(patient);
+            List<InstructionToPatient> listOfInstructions = instructionToPatientService.handleForm(form);
+            Encounters dateAndConditionsData = patientService.getDateAndConditionsData(dateAndConditions,
+                    listOfInstructions, patient);
+            dateAndConditionsData = encounterRepository.save(dateAndConditionsData);
+
+            return "/practitioner/dashboard/patientGenerated";
         }
-
-        // QR code generation
-        QRCodeGenerator.createQRImage(id);
-
-        userDataService.saveUserData(user);
-        System.out.println("Patient " + user.getLastName() + " created\nPassword is: " + form.getPassword());
-
-        PatientData patient = new PatientData();
-        patient.setFhirId(Long.valueOf(id));
-        patient.setId(user.getId());
-        patientDataRepository.save(patient);
-
-        System.out.println(user.getId() + " " + patient.getId());
-
-        form.setPatient(patient);
-        instructionToPatientService.handleForm(form);
-
-        return "/practitioner/dashboard/patientGenerated";
     }
-
 }

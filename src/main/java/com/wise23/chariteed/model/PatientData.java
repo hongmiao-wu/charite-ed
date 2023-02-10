@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -27,4 +29,6 @@ public class PatientData {
     @OneToMany(mappedBy = "patient")
     Set<InstructionToPatient> instructions;
 
+    @OneToMany(mappedBy = "patient")
+    List<Encounters> dateAndConditions;
 }

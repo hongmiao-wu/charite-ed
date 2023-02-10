@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class InstructionToPatientService {
@@ -16,7 +18,8 @@ public class InstructionToPatientService {
     @Autowired
     InstructionToPatientRepository instructionToPatientRepository;
 
-    public void handleForm(InstructionsToPatientForm form) {
+    public List<InstructionToPatient> handleForm(InstructionsToPatientForm form) {
+        List<InstructionToPatient> instructionList = new ArrayList<InstructionToPatient>();
         for (Instruction instruction : form.getInstructionSet()) {
             InstructionToPatient itp = new InstructionToPatient();
             itp.setPatient(form.getPatient());
@@ -38,8 +41,10 @@ public class InstructionToPatientService {
             // itp.setSecondFeedbackDays(form.getSecondFeedbackDays());
             // }
 
-            instructionToPatientRepository.save(itp);
+            itp = instructionToPatientRepository.save(itp);
+            instructionList.add(itp);
         }
+        return instructionList;
     }
 
     public InstructionToPatient getInstructionToPatientById(Long id) {
