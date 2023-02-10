@@ -68,9 +68,10 @@
                             <div th:text="${encounter.instructions[0].getPractitionerComment()}"></div>
                         </td>
                         <td>
-                            <span class="badge bg-warning text-dark"
-                                th:text="'Feedback required in ' + ${encounter.instructions[0].getFirstFeedbackDays() + ' day(s)'}"></span>
+                            <span class="badge bg-warning text-dark" th:if="!${encounter.instructions[0].firstFeedbackGiven}" th:text="'Feedback required in ' + ${encounter.instructions[0].getFirstFeedbackDays() + ' day(s)'}"></span>
+                            <span class="badge bg-success text-light" th:if="${encounter.instructions[0].firstFeedbackGiven}" th:text="'Feedback provided'"></span>
                         </td>
+
                         <td>
                             <div th:if="${encounter.instructions[0].firstFeedbackGiven}">
                                 <div>
@@ -126,6 +127,12 @@
                                 </form>
                             </div>
                         </td>
+                        <td>
+                            <div>
+                                <a th:href="@{/patient/download(encounterId=${encounter.getId()})}" class="btn btn-info">Download doctor's
+                                    letter</a>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -133,7 +140,6 @@
 
         <div>
             <a th:href="@{/patient/eNumbers}" class="btn btn-info">Emergency Numbers</a>
-            <a th:href="@{/patient/download}" class="btn btn-info">Download doctor's letter</a>
             <a th:href="@{/logout}" class="btn btn-info">Logout</a>
         </div>
 

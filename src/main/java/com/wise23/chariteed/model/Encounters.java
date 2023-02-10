@@ -1,5 +1,6 @@
 package com.wise23.chariteed.model;
 
+import java.sql.Blob;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -48,4 +50,7 @@ public class Encounters {
             @JoinColumn(name = "date_and_conditions_id") }, inverseJoinColumns = {
                     @JoinColumn(name = "instruction_to_patient_id") })
     private List<InstructionToPatient> instructions;
+
+    @Lob
+    private Blob file;
 }
