@@ -29,7 +29,7 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,15 +63,14 @@ public class PatientController {
 
     @GetMapping("/download")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(HttpServletResponse response, Principal principal) {
+    public ResponseEntity<Resource> serveFile(@RequestParam("encounterId") Long encounterId) {
+        Encounters encounter = encounterRepository.findById(encounterId).orElse(null);
 
-        UserData user = userDataService.getUserData(principal.getName());
-        Blob test = user.getFile();
-
-        Resource file = convertBlobToResource(test);
+        Blob test = encounter.getFile();
+        Resource doctorsLetter = convertBlobToResource(test);
 
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + "doctors_letter.pdf" + "\"").body(file);
+                "attachment; filename=\"" + "doctors_letter.pdf" + "\"").body(doctorsLetter);
     }
 
     private Resource convertBlobToResource(Blob blob) {
@@ -93,6 +92,7 @@ public class PatientController {
         PatientData patient = patientService.findById(patientUser.getId());
 
         List<Encounters> encounters = encounterRepository.findByPatient(patient);
+        Collections.reverse(encounters);
 
         List<InstructionToPatient> instructionsWithoutFeedback = patientService
                 .getInstructionsOfPatientWithoutFeedback(patientFhirID);

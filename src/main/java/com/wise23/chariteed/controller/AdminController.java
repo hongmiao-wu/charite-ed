@@ -108,9 +108,7 @@ public class AdminController {
     @PostMapping("/admin/deleteUserData")
     public String deleteUserData(@RequestParam("firstName") String firstName,
             @RequestParam("lastName") String lastName,
-            @RequestParam("mobile") String mobile,
-            @RequestParam("patientID") Long patientID) {
-        System.out.println(patientID);
+            @RequestParam("mobile") String mobile) {
         userDataService.deleteByFullNameAndMobile(firstName, lastName, mobile);
         return "redirect:/admin/dashboard";
     }

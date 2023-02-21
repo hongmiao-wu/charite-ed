@@ -1,6 +1,7 @@
 package com.wise23.chariteed.service;
 
 import java.util.List;
+import java.sql.Blob;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -88,11 +89,6 @@ public class PatientService {
             }
         }
 
-        for (DateAndConditions dateAndStrings : dateAndConditions) {
-            System.out.println("DATE: " + dateAndStrings.getDate());
-            System.out.println("CONDITIONS: " + dateAndStrings.getConditions());
-        }
-
         return dateAndConditions;
     }
 
@@ -123,15 +119,16 @@ public class PatientService {
         return conditions;
     }
 
-    public Encounters getDateAndConditionsData(List<DateAndConditions> dateAndConditions,
-            List<InstructionToPatient> instructions, PatientData patient) {
-        Encounters dateAndConditionsData = new Encounters();
-        dateAndConditionsData.setDate(dateAndConditions.get(0).getDate());
-        dateAndConditionsData.setConditions(dateAndConditions.get(0).getConditions());
-        dateAndConditionsData.setInstructions(instructions);
-        dateAndConditionsData.setPatient(patient);
+    public Encounters getEncounters(List<DateAndConditions> dateAndConditions,
+            List<InstructionToPatient> instructions, PatientData patient, Blob doctorsLetter) {
+        Encounters encounters = new Encounters();
+        encounters.setDate(dateAndConditions.get(0).getDate());
+        encounters.setConditions(dateAndConditions.get(0).getConditions());
+        encounters.setInstructions(instructions);
+        encounters.setPatient(patient);
+        encounters.setFile(doctorsLetter);
 
-        return dateAndConditionsData;
+        return encounters;
     }
 
     public String generatePassword(String patientData) {

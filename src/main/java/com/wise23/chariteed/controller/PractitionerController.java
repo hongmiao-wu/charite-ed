@@ -133,6 +133,8 @@ public class PractitionerController {
 
         UserData patientUser = userDataService.userExists(firstName, lastName, mail);
 
+        byte[] file_bytes = form.getFile().getBytes();
+
         if (patientUser != null) {
             // If patient alreasy exist
             PatientData patient = patientService.findById(patientUser.getId());
@@ -145,8 +147,8 @@ public class PractitionerController {
             form.setPatient(patient);
             List<InstructionToPatient> listOfInstructions = instructionToPatientService.handleForm(form);
 
-            Encounters dateAndConditionsData = patientService.getDateAndConditionsData(dateAndConditions,
-                    listOfInstructions, patient);
+            Encounters dateAndConditionsData = patientService.getEncounters(dateAndConditions,
+                    listOfInstructions, patient, new SerialBlob(file_bytes));
             encounterRepository.save(dateAndConditionsData);
 
             return "redirect:/practitioner/dashboard";
@@ -155,11 +157,10 @@ public class PractitionerController {
             // User creation with lots of dummy data
             Random rand = new Random();
             int phoneNumber = 1000000000 + rand.nextInt(900000000);
-            byte[] file_bytes = form.getFile().getBytes();
             form.setPassword(patientService.generatePassword(patientData));
 
             patientUser = new UserData(firstName, lastName, mail, form.getPassword(), Integer.toString(phoneNumber),
-                    Role.PATIENT, id, new SerialBlob(file_bytes));
+                    Role.PATIENT, id);
 
             // QR code generation
             QRCodeGenerator.createQRImage(id);
@@ -177,8 +178,8 @@ public class PractitionerController {
             // ID to connect the instruction with the conditions
             form.setPatient(patient);
             List<InstructionToPatient> listOfInstructions = instructionToPatientService.handleForm(form);
-            Encounters dateAndConditionsData = patientService.getDateAndConditionsData(dateAndConditions,
-                    listOfInstructions, patient);
+            Encounters dateAndConditionsData = patientService.getEncounters(dateAndConditions,
+                    listOfInstructions, patient, new SerialBlob(file_bytes));
             dateAndConditionsData = encounterRepository.save(dateAndConditionsData);
 
             return "/practitioner/dashboard/patientGenerated";
