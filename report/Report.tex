@@ -16,46 +16,42 @@
 
 \section{Introduction}
 \begin{itemize}
-    \item Short introduction what this project is about, what the goals were and what our part was
+    \item Short introduction
 \end{itemize}
 
 \section{Background \& Healthcare in ED}
-\begin{itemize}
-    \item Tell about the situation at the Charité and how they handled everything over there - What is the problem (language barriers, doctor's letters in physical form, instructions not written down) there and why do they want an application like ours.
-\end{itemize}
+When patients visit the emergency department, they usually receive only a physical discharge letter and verbal instructions to follow, when they're being discharged. However, this can often lead to problems, as there may be language barriers and instructions can easily be forgotten. In addition, the situation is made more difficult because most instructions are customized for each patient. This can result in confusion and even lead to patients returning to the emergency department to ask for instructions or to see doctors again for examination because they are not feeling better.
 
 \section{Our Objectives \& Team organization}
-Objectives:
-\begin{itemize}
-    \item Backend for customized discharge \& instructions for patients
-    \item doctor's letter can be included
-    \item Feedback can be given
-    \item reduce mistakes due to digital information and not only oral instructions
-    \item Maybe a brief overview how the different roles are interacting with each other
-\end{itemize}
-Team organization:
-\begin{itemize}
-    \item Weekly meetings with the Charité (Noel)
-    \item Weekly meetings with our prof
-    \item (Almost) Weekly meetings in our group
-    \item GitHub, WhatsApp, Discord (frontend-team)
-\end{itemize}
+The objective of this project is to develop a backend application that simplifies the discharge and instructions process for both doctors and patients. The application will allow doctors and patients to log in using their respective login credentials to perform various actions or access information. Doctors will have the ability to digitally hand over doctor's letters to patients, which can be downloaded and then forwarded, or shown to their general practitioners. Additionally, doctors will be able to send patients personalized instructions digitally to reduce the possibility of errors due to language barriers or forgetting the instructions. The system will also provide patients with the ability to send feedback to the ED after a specific period, which includes their post-treatment status. Moreover, the system should send reminders to patients to contact specialists or similar after a specific time. By achieving these objectives, the discharge and instructions process will be simplified, and doctors and patients will have an improved digital experience.\\
+Throughout the project we have established a relatively strict organized team structure. Weekly meetings with the Charité were held to discuss open questions and our progress. In these meetings, goals were clarified, and feedback was obtained, which helped us to proceed further. In addition, we almost held weekly meetings within the team to distribute task packages and clarify open implementation questions. Moreover, we also had almost weekly meetings as part of the module to discuss our progress with Professor Wolter and obtain feedback for our continued work. In these we had the opportunity to address any concerns and receive guidance. To manage our work effectively, we utilized WhatsApp and Discord as communication platforms and GitHub to manage our code and individual issues and merge requests. These tools enabled us to keep track of our progress and ensure that the project remained organized and well-managed.
 
 \section{Implementation}
 
 \subsection{Technical background}
-\begin{itemize}
-    \item Java
-    \item Spring boot
-    \item FHIR
-\end{itemize}
+\textit{Maybe a small introduction to this part here}\\
+\textbf{Java Spring Boot}\\
+Java Spring Boot is a popular open-source framework for building backend web applications. It is built on top of the Spring framework, which is widely used for enterprise-level applications. Spring Boot makes it easier to create stand-alone, production-grade applications that can be deployed and scaled easily. The framework provides a wide range of features and functionality, including web applications, messaging, and data access.\\
+One of the key advantages of Spring Boot is that it requires minimal configuration, allowing developers to focus on writing application code rather than setting up infrastructure. Spring Boot's auto-configuration feature automatically configures various components based on the libraries available in the project's classpath. This means that developers can quickly create a new project and start building features without spending time on configuring boilerplate code.\\
+Spring Boot also comes with an embedded web server, which allows developers to quickly run and test their applications without needing to install a separate web server. Additionally, Spring Boot supports a range of other libraries and frameworks, making it an excellent choice for developers who want to build scalable and maintainable web applications.\\\\
+\textbf{FHIR}\\
+Fast Healthcare Interoperability Resources (FHIR) is a standard for exchanging healthcare information electronically. FHIR was developed by the non-profit organization Health Level Seven International (HL7) and is based on modern web technologies such as RESTful web services, JSON, and XML. FHIR aims to simplify interoperability between healthcare systems and to make it easier for healthcare providers to access and exchange health data.\\
+FHIR provides a standardized format for healthcare data, enabling healthcare providers to share patient information with each other, even if they are using different electronic health record (EHR) systems. FHIR resources define the data elements that can be shared, such as patient demographics, clinical observations, and laboratory results. FHIR also defines the standard operations that can be performed on these resources, such as read, search, and update.\\
+FHIR has gained popularity due to its flexibility and ease of use. FHIR resources can be easily integrated into existing healthcare systems and can be accessed using modern web technologies. FHIR also allows developers to create custom profiles, enabling them to define additional data elements specific to their use case. Additionally, FHIR has a growing ecosystem of tools and resources that make it easier for developers to implement the standard and to build applications that use FHIR data. Overall, FHIR is a promising standard for improving healthcare interoperability and enabling better access to health data.
 
 \subsection{Databases}
-\begin{itemize}
-    \item Users
-    \item instructions
-    \item etc.
-\end{itemize}
+\textbf{Encounters}\\
+This database stores the individual encounters (hospitalizations) of the patients. This includes a date when the encounter took place, as well as a list of conditions (diagnoses) that were detected at the respective encounter. In addition, the records contain a list of instructions and a file representing the doctor's letter.\\\\
+\textbf{Instructions}\\
+This database contains information about what each instruction is called and what its content is. They also contain when the respective instruction was created and by whom (which practitioner) it was created.\\\\
+\textbf{InstructionsToPatient}\\
+This database contains a bit more information regarding the instructions. Practitioners' comments and patients' feedback for the instructions are included here.\\\\
+\textbf{PatientData}\\
+This database contains the patient-specific information. Here are the instructions, as well as the individual Encounters contained.\\\\
+\textbf{PractitionerData}\\
+This database contains the practitioner-specific information, such as names and the instructions handed out by the respective practitioner.\\\\
+\textbf{UserData}\\
+This database contains the user specific data. This can be data from all roles: Admin, Practitioner, Patient. Included is information such as name, phone number, mail address, as well as the role and the encrypted password.
 
 \subsection{User access \& Security}
 \begin{itemize}
@@ -83,6 +79,8 @@ Team organization:
     \item What can a patient do/see? (See instructions, doctor's letter, Emergency numbers, can give feedback)
     \item Maybe include pictures from our "frontend" or figures to illustrate
 \end{itemize}
+
+\section{Conclusion}
 
 \section{Reflection}
 \begin{itemize}
