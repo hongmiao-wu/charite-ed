@@ -1,0 +1,94 @@
+\documentclass[]{report}
+
+\renewcommand{\thesection}{\arabic{section}}
+% \usepackage[ngerman]{babel}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{float}
+\setcounter{figure}{0}
+
+\title{App development for Charité Emergency Department}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+\begin{itemize}
+    \item Short introduction what this project is about, what the goals were and what our part was
+\end{itemize}
+
+\section{Background \& Healthcare in ED}
+\begin{itemize}
+    \item Tell about the situation at the Charité and how they handled everything over there - What is the problem (language barriers, doctor's letters in physical form, instructions not written down) there and why do they want an application like ours.
+\end{itemize}
+
+\section{Our Objectives \& Team organization}
+Objectives:
+\begin{itemize}
+    \item Backend for customized discharge \& instructions for patients
+    \item doctor's letter can be included
+    \item Feedback can be given
+    \item reduce mistakes due to digital information and not only oral instructions
+    \item Maybe a brief overview how the different roles are interacting with each other
+\end{itemize}
+Team organization:
+\begin{itemize}
+    \item Weekly meetings with the Charité (Noel)
+    \item Weekly meetings with our prof
+    \item (Almost) Weekly meetings in our group
+    \item GitHub, WhatsApp, Discord (frontend-team)
+\end{itemize}
+
+\section{Implementation}
+
+\subsection{Technical background}
+\begin{itemize}
+    \item Java
+    \item Spring boot
+    \item FHIR
+\end{itemize}
+
+\subsection{Databases}
+\begin{itemize}
+    \item Users
+    \item instructions
+    \item etc.
+\end{itemize}
+
+\subsection{User access \& Security}
+\begin{itemize}
+    \item User login
+    \item role based login
+    \item JWT
+    \item QR-code
+    \item (History of our used security systems)
+\end{itemize}
+
+\subsection{Admin}
+\begin{itemize}
+    \item What can an admin do/see? (can see all practitioners and patients, can see feedback from patients)
+    \item Maybe include pictures from our "frontend" or figures to illustrate
+\end{itemize}
+
+\subsection{Practitioner}
+\begin{itemize}
+    \item What can a practitioner do/see? (can create instructions or fetch them from a fhir server, can create patient accounts and assign instructions/doctor's letter)
+    \item Maybe include pictures from our "frontend" or figures to illustrate
+\end{itemize}
+
+\subsection{Patient}
+\begin{itemize}
+    \item What can a patient do/see? (See instructions, doctor's letter, Emergency numbers, can give feedback)
+    \item Maybe include pictures from our "frontend" or figures to illustrate
+\end{itemize}
+
+\section{Reflection}
+\begin{itemize}
+    \item What was good/bad about the project and teamwork?
+\end{itemize}
+
+% \bibliography{literature.bib}{}
+% \bibliographystyle{plain}
+\end{document}
